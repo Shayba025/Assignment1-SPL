@@ -80,14 +80,16 @@ BalancedSelection* BalancedSelection::clone() const{
 EconomySelection::EconomySelection() : lastSelectedIndex(-1) {}
 const FacilityType& EconomySelection::selectFacility(const vector<FacilityType>& facilitiesOptions){
     //adding size_t intead of int
-    for(size_t i=0; i<facilitiesOptions.size();i++){
-        if(facilitiesOptions[i].getCategory() == FacilityCategory::ECONOMY){ //looking for a facillity who is form the economy category 
-            this->lastSelectedIndex = (this->lastSelectedIndex + 1) % facilitiesOptions.size(); //moving on to the next facillity
-        return facilitiesOptions[i];
+    if(!facilitiesOptions.empty()){
+        for(size_t i=0; i<facilitiesOptions.size();i++){
+            if(facilitiesOptions[i].getCategory() == FacilityCategory::ECONOMY){ //looking for a facillity who is form the economy category 
+                this->lastSelectedIndex = (this->lastSelectedIndex + 1) % facilitiesOptions.size(); //moving on to the next facillity
+            return facilitiesOptions[i];
+            }
         }
     }
-    // null ptr
-    throw std::runtime_error("Facility not found in from Economy category");
+            return facilitiesOptions[0];
+
 }
 
 
@@ -105,17 +107,22 @@ EconomySelection* EconomySelection::clone() const{
 
 
 // Sustainability Selection:
-SustainabilitySelection::SustainabilitySelection() : lastSelectedIndex(-1) {}
+SustainabilitySelection::SustainabilitySelection() 
+    : lastSelectedIndex(-1) {}
+
 const FacilityType& SustainabilitySelection::selectFacility(const vector<FacilityType>& facilitiesOptions){
     //adding size_t instead of int
-    for(size_t i=0; i<facilitiesOptions.size();i++){
-        if(facilitiesOptions[i].getCategory() == FacilityCategory::ENVIRONMENT){ // looking for a facillity who is form the ENVIRONMENT category 
-            this->lastSelectedIndex = (this->lastSelectedIndex + 1) % facilitiesOptions.size(); // moving on to the next facillity
-        return facilitiesOptions[i];
-        }
+    if(!facilitiesOptions.empty()){
+        for(size_t i=0; i<facilitiesOptions.size();i++){
+            if(facilitiesOptions[i].getCategory() == FacilityCategory::ENVIRONMENT){ // looking for a facillity who is form the ENVIRONMENT category 
+                this->lastSelectedIndex = (this->lastSelectedIndex + 1) % facilitiesOptions.size(); // moving on to the next facillity
+            return facilitiesOptions[i];
+            }
     }
-    // check null ptr
-    throw std::runtime_error("Facility not found in from Evvironment category");
+    }
+    // to avoid warning, based on instruction we'll have atleast 1 env type in the options
+    return facilitiesOptions[0];
+    
 }
 
 //to string method

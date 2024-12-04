@@ -1,98 +1,102 @@
-#include <iostream>
-#include <fstream>
-#include <string>
 #include "Simulation.h"
-# include "Action.h"
-# include "Auxiliary.h"
-# include "Facility.h"
-# include "Plan.h"
-# include "SelectionPolicy.h"
-# include "Settlement.h"
-/*
-class Simulation {
-    public:
-        Simulation(const string &configFilePath);
-        void start();
-        void addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy);
-        void addAction(BaseAction *action);
-        bool addSettlement(Settlement *settlement);
-        bool addFacility(FacilityType facility);
-        bool isSettlementExists(const string &settlementName);
-        Settlement &getSettlement(const string &settlementName);
-        Plan &getPlan(const int planID);
-        void step();
-        void close();
-        void open();
+#include <fstream> 
+#include "Auxiliary.h"
 
-    private:
-        bool isRunning;
-        int planCounter; //For assigning unique plan IDs
-        vector<BaseAction*> actionsLog;
-        vector<Plan> plans;
-        vector<Settlement*> settlements;
-        vector<FacilityType> facilitiesOptions;
-};*/
-
-
-
-void Simulation::HandleConfigFileRow(row){
-    // spliting string via spaces
-    std::stringstream ss(row);
-    string word;
-    boolean gotType = false;
-    while (!gotType && row >> word) {
-        // we check if word is settlement or facility or plan
-        // yes we cahnge to got type and we call the function that adds it to the vector
-        if word = 
-    }
-}
-
-
-//Simulation builder:
 Simulation::Simulation(const string &configFilePath)
-
- :isRunning(false), planCounter(0), 
+  : isRunning(false),
+    planCounter(0),
     actionsLog(),
     plans(),
     settlements(),
     facilitiesOptions()
- 
- 
- 
- {
-    // opening the file
-    // we try 3 times if the file won't open it's a problem with the file
-    //check with ido
-    std::ifstream configfile (configFilePath);
+{
+    std::ifstream configfile(configFilePath);
+    std::string line;
+    while (std::getline(configfile, line)) {
+        std::vector<std::string> arguments = Auxiliary::parseArguments(line);
+        if(arguments[0] == "settlement")
+        {
+            SettlementType typeAsInt = static_cast<SettlementType>(std::stoi(arguments[2]));
+            Settlement *newSettlement = new Settlement(arguments[1],typeAsInt);
+            addSettlement(newSettlement);
+        }
+            
+        else if(arguments[0] == "facility"){
+            FacilityType *newFacility = new FacilityType(arguments[1], static_cast<FacilityCategory>(std::stoi(arguments[2])) ,std::stoi(arguments[3]),std::stoi(arguments[4]),std::stoi(arguments[5]),std::stoi(arguments[6]));
+            addFacility(*newFacility);
+            delete(newFacility);
 
-    string row; // initiallating the string that will hold the text row by row.
+        }
+        // else if(arguments[0] == "plan"){
+        //  addPlan();
+        // }
+            
+        }
 
-    //Read each line of the file
-    while(getline(configfile, row)){
-        HandleConfigFileRow(row);
-
-    }
     configfile.close();
- }
-
-
-
-
-//start method
-void Simulation::start(){
-    isRunning =true; 
-    string input ="";
-   std:: cout << "Simulation has started!" << std::endl;
-
-   while (isRunning){
-    getline(std::cin, input);
-    std:: cout << "type an action or 'stop' to finish the simulation" << std::endl;
-    if(input == "stop"){
-        isRunning = false;
-        std:: cout << "Simulation has finished" << std::endl;
-    }
-
-
-   }
-   
 }
+
+// to do
+void Simulation::start(){
+
+}
+
+void Simulation::addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy){
+    // create and insert
+    this->plans.push_back(*new Plan(this->planCounter, settlement, selectionPolicy, this->facilitiesOptions));
+    // making changes after init
+    this->planCounter = this->planCounter + 1;
+}
+
+bool Simulation::addSettlement(Settlement *settlement){
+    if(isSettlementExists(settlement->getName())){
+        // couldnt add settlement because it is already exists so we failed to add it -> false
+        return false;
+    }
+    this->settlements.push_back(settlement);
+    return true;
+    
+}
+
+bool Simulation::addFacility(FacilityType facility){
+    // checking if facility name already existing
+    for(auto iter = this->facilitiesOptions.begin() ; iter!= this->facilitiesOptions.end();)
+    {
+        FacilityType currFacility = *iter;
+        if(facility.getName() == currFacility.getName()){
+            return false;
+        }
+    }
+    // no facility type in option
+    this->facilitiesOptions.push_back(facility);
+    return true;
+}
+
+// we check if the settlement name is in our settlements vector
+// if it is the settlement exist else its not so we return false;
+bool Simulation::isSettlementExists(const string &settlementName){
+    for(auto iter = this->settlements.begin() ; iter!= this->settlements.end();)
+    {
+        Settlement *currSettlement = *iter;
+        if(settlementName == currSettlement->getName()){
+            return true;
+        }
+    }
+    return false;
+}
+
+
+Settlement &Simulation::getSettlement(const string &settlementName)
+{
+    for(auto iter = this->settlements.begin() ; iter!= this->settlements.end();)
+    {
+        Settlement *currSettlement = *iter;
+        if(settlementName == currSettlement->getName()){
+            return *currSettlement;
+        }
+    }
+    // we return a static settlement and later it will be deleted automatically
+    static Settlement nullSttlement("nullSettlement", SettlementType::CITY);
+    return nullSttlement;
+}
+

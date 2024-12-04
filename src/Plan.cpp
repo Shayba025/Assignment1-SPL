@@ -9,10 +9,8 @@
 
 // plan constructor
 Plan::Plan(const int planId, const Settlement &settlement, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions)
-//no need to initilized facilites/underconstructions becuase c++ will create the empty vector on it's own
   : plan_id(planId),
     settlement(settlement),
-    //maybe change
     selectionPolicy(selectionPolicy),
     status(PlanStatus::AVALIABLE),
     facilities(),
@@ -50,16 +48,15 @@ Plan::Plan(const Plan& other)
     for (const Facility *facility : other.facilities) {
         this->facilities.push_back(new Facility(*facility));
     }
-    //deep copy for
+    //deep copy for underConstruction
     for (const Facility *facility : other.underConstruction) {
         this->underConstruction.push_back(new Facility(*facility));
     }
   }
-
-
+   
 
 // function for reseting/deleting the vectors facilities and underConstruction
-void Plan::facilitiesAndUnderConstructionclearer(){
+void Plan::facilitiesAndUnderConstructionClearer(){
     //delete all facility object we have from facilites
     for (const Facility *facility : this->facilities) {
         delete facility;
@@ -72,47 +69,6 @@ void Plan::facilitiesAndUnderConstructionclearer(){
     this->facilities.clear();
     this->underConstruction.clear();
 
-}
-
-
-// maybe delete
-//copy assignment operator 
-Plan& Plan::operator=(const Plan& other) {
-    // see if i need to change faclitiy options as well
-    //first we want to avoid self assign
-    if (this != &other) {
-    //delete current resourses
-    facilitiesAndUnderConstructionclearer();
-    delete this->selectionPolicy;
-    
-    //copy values from other
-    //cant assign settlements and facilites options since they are const
-    this->plan_id = other.plan_id;
-    //if is nullptr we cant call the clone function run time compilation
-    if(other.selectionPolicy != nullptr){
-        this->selectionPolicy = other.selectionPolicy->clone();
-        
-    }
-    else{
-        this->selectionPolicy = nullptr;
-    }
-    
-    
-    this->status = other.status;
-    this->life_quality_score = other.life_quality_score;
-    this->economy_score = other.economy_score;
-    this->environment_score = other.environment_score;
-
-    //deep copy for facilites
-    for (const Facility *facility : other.facilities) {
-        this->facilities.push_back(new Facility(*facility));
-    }
-    //deep copy for underConstruction
-    for (const Facility *facility : other.underConstruction) {
-        this->underConstruction.push_back(new Facility(*facility));
-    }
-    }
-    return *this;
 }
 
 //move constructor
@@ -136,7 +92,6 @@ Plan::Plan(Plan&& other) noexcept
     }   
     // we'll assgin nullptr but we alreaedy did so no need
     
-    //ask ido if to do move to selectiopn policy
     this->facilities = std::move(other.facilities);  
     this->underConstruction = std::move(other.underConstruction);  
     
@@ -151,55 +106,13 @@ Plan::Plan(Plan&& other) noexcept
 
     }
 
-//mybe delete
-//move operator
-Plan& Plan::operator=(Plan&& other) noexcept
-{
-    //first we want to avoid self assign
-    if (this != &other) {
-    //moving stack data
-    this->plan_id = other.plan_id;
-    //deleting selection policy to avoid data leaks
-    delete this->selectionPolicy;
-    if(other.selectionPolicy != nullptr){
-        this->selectionPolicy = other.selectionPolicy->clone();
-         //avoiding memory leak
-        other.selectionPolicy = nullptr;
-    }
-    else{
-        this->selectionPolicy = nullptr;
-    }
-   
-    this->status = other.status;
-    this->life_quality_score = other.life_quality_score;
-    this->economy_score = other.economy_score;
-    this->environment_score = other.environment_score;
-    
 
 
-    //moving dynamic data
-    this->facilities = std::move(other.facilities);  
-    this->underConstruction = std::move(other.underConstruction);  
-
-
-    //clearing other:
-    other.selectionPolicy = nullptr;
-    other.status = PlanStatus::AVALIABLE;
-    other.facilities.clear();
-    other.underConstruction.clear();
-    other.life_quality_score = 0;
-    other.economy_score = 0;
-    other.environment_score = 0;
-    }
-    return *this;
-}
-
-//destructor
 Plan::~Plan(){
     // we delete all variables on the heap, the 2 vectors facilites and underConstraction and the objects in them
     // select policy
     // we dont delete the settlement object
-    facilitiesAndUnderConstructionclearer();
+    facilitiesAndUnderConstructionClearer();
     delete this->selectionPolicy;
 }
 
@@ -242,9 +155,9 @@ void Plan::step(){
     //step 1:
     if(this->status == PlanStatus::AVALIABLE){
         //start choosing buildings to build
-        //step 2:
+    //step 2:
         //adding size_t instead of int
-        size_t constructionLimit = this->settlement.getConstructionLimit();//there is no method as this one in header
+        size_t constructionLimit = this->settlement.getConstructionLimit();
         while(this->underConstruction.size() < constructionLimit){
             Facility *new_facility = new Facility(selectionPolicy->selectFacility(facilityOptions),settlement.getName());
             // consider adding case of what if facility is null ptr maybe printh somesheet
@@ -253,40 +166,49 @@ void Plan::step(){
         }
     }
     //step 3 iterating over underconstruction :
-    for (auto it = this->underConstruction.begin(); it != this->underConstruction.end(); ) {
-        Facility *facility = *it;
+    // iterating over the array
+    for (auto iter = this->underConstruction.begin(); iter != this->underConstruction.end(); ) {
+        // iter is a pointer so we need to get the obj itself
+        Facility *facility = *iter;
         FacilityStatus currStatus = facility->step();
        if(currStatus == FacilityStatus::OPERATIONAL){
-            //remove vevtor from Undercondtructor
-            this->facilities.push_back(*this->underConstruction.erase(it)); 
+            // after the bilding i Operatiomnal we need to update the settlement scores
+            this->life_quality_score = facility->getLifeQualityScore();
+            this->economy_score = facility->getEconomyScore();
+            this->environment_score = facility->getEnvironmentScore();
+            //remove vevtor from Undercondtructor and add to finished facilities
+            this->facilities.push_back(*this->underConstruction.erase(iter)); 
        }
        else{
-        it = it+1;
+        iter = iter+1;
        }
     }
     //step 4 updating plan status:
     //adding size_t instead of int
-    size_t constructionLimit = this->settlement.getConstructionLimit();//verify about get constraction limit
+    size_t constructionLimit = this->settlement.getConstructionLimit();
     if(this->underConstruction.size() < constructionLimit){
         this->status = PlanStatus::AVALIABLE;
     }
 }
 
-//finish
+// printing the status of the plan
 void Plan::printStatus(){
     std::cout << statusToString();
 
 }
 
+// getter for facilities
 const vector<Facility*> &Plan::getFacilities() const{
     return this->facilities;
 }
 
+// we dont  cahnge plan scores while under constructions
 void Plan::addFacility(Facility* facility){
     this->underConstruction.push_back(new Facility(*facility));
-}
 
-// static function that transaltes planStatus to string
+    
+}
+// modifying the enum to string for the to string
 const string Plan::statusToString() const{
     string statusStr="";
  
@@ -305,32 +227,36 @@ const string Plan::statusToString() const{
     return statusStr;  
 }
 
+// getter for plan_id
+const int Plan::getPlan_id() const{
+    return this->plan_id;
+}
+
 const string Plan::toString() const{
     // creating oss object
-    std::ostringstream oss;
-    oss << "plan id: " << this->plan_id << " | "
-        << " Settlement " << this->settlement.getName() << " | ";
+    string returnStr =  "plan id: " + std::to_string(this->plan_id) + " | "
+        + " Settlement " + this->settlement.getName() + " | ";
         // if is ullptr can't use the get name function run time compilation
-        if (selectionPolicy != nullptr) {
-        oss << "selection policy: " << selectionPolicy->toString() << " | "; 
-    } else {
-        oss << "selection policy: no policy given  | ";
+    if (selectionPolicy != nullptr) {
+            returnStr + "selection policy: " + selectionPolicy->toString() + " | "; 
+}   else {
+         returnStr + "selection policy: no policy given  | ";
     }
-    oss << " status : " << statusToString() << " | "
-        << "life quality score: " << life_quality_score << " | "
-        << "economy score: " << economy_score << " | "
-        << "environment score: " << environment_score << "\n"
-        << "facilities: ";
+        returnStr + " status : " + statusToString() + " | "
+        + "life quality score: " + std::to_string(life_quality_score) + " | "
+        + "economy score: " + std::to_string(economy_score) + " | "
+        + "environment score: " + std::to_string(environment_score) + "\n"
+        + "facilities: ";
         // iterating other the facilities
         for (const Facility* facility : this->facilities){
-            oss << "  | " << facility->toString() << "  | ";
+            returnStr + "  | " + facility->toString() + "  | ";
         }
-        oss << "under construction : ";
+        returnStr + "under construction : ";
         // iterating other the under construction facilities
          for (const Facility* facility : this->underConstruction){
-            oss << "  | " << facility->toString() << "  | ";
+            returnStr + "  | " + facility->toString() + "  | ";
         }
 
 
-    return oss.str();
+    return returnStr;
 }
