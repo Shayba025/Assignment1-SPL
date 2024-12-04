@@ -129,6 +129,6 @@ class AddSettlement : public BaseAction {
         const SettlementType settlementType;
 };*/
 
-
+//continue from here
 AddSettlement:: AddSettlement(const string &settlementName, const SettlementType settlementType)
 :settlementName(settlementName),settlementType(settlementType){}
