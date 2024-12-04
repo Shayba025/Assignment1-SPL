@@ -5,12 +5,9 @@
  
  
 // FacilityType Constructor:
-// variables: name, category, cost (price), and score values.
  FacilityType::FacilityType(const string &name, const FacilityCategory category, const int price, const int lifeQuality_score, const int economy_score, const int environment_score)
     : name(name), 
-    // based on the facility category enum
     category(category),
-    // how many time units it takes to make the facility operational 
     price(price), 
     lifeQuality_score(lifeQuality_score), 
     economy_score(economy_score), 
@@ -29,7 +26,7 @@ int FacilityType::getCost() const{
 
 // getter for life quality score
 int  FacilityType::getLifeQualityScore() const{
-            return this->lifeQuality_score; 
+    return this->lifeQuality_score; 
  }
 
 // getter for environment score
@@ -48,10 +45,9 @@ FacilityCategory FacilityType::getCategory() const{
 }
 
 // facility constructor
-// variables: facility type variables + settlement name 
 Facility::Facility(const string &name, const string &settlementName, const FacilityCategory category, const int price, const int lifeQuality_score, const int economy_score, const int environment_score)
     : FacilityType(name, category, price, lifeQuality_score, economy_score, environment_score), 
-    settlementName(settlementName),
+    settlementName(settlementName), status(),
 
     //since in the inialization the cost of the facility is the time left to make it operational timeleft and price holds the same value
     timeLeft(price)
@@ -66,11 +62,10 @@ Facility::Facility(const string &name, const string &settlementName, const Facil
      }
 
 // deep copy constructor of facility type object
-// variables facility type object and settlement name
 Facility::Facility(const FacilityType &type, const string &settlementName)
     : FacilityType(type.getName(), type.getCategory(), type.getCost(), type.getLifeQualityScore(), 
     type.getEconomyScore(), type.getEnvironmentScore()),  settlementName(settlementName),
-
+    status(),
     //since in the inialization the cost of the facility is the time left to make it operational timeleft and price holds the same value
     timeLeft(price)
     {
@@ -116,12 +111,31 @@ const FacilityStatus& Facility::getStatus() const{
     return this->status;
 };
 
+       
+ //convert the status enum to viable string for the toString method
+ // determaning the string using the case method of enum
+const string Facility::statusAsString() const{
+    string currStatus = "";
+        switch (this->status)
+        {
+        case FacilityStatus::UNDER_CONSTRUCTIONS:
+            currStatus = "UNDER_CONSTRUCTIONS";
+            break;
+        case FacilityStatus::OPERATIONAL:
+            currStatus = "OPERATIONAL";
+            break;
+        default:
+            currStatus = "Unknown status";
+            break;
+        }
+    return currStatus;
+}
 
  //convert the status enum to viable string for the toString method
  // determaning the string using the case method of enum
-std::string categoryAsString(const FacilityCategory &category){
+const string Facility::categoryAsString() const{
      string currCategory = "";
-            switch (category)
+            switch (this->category)
             {
             case FacilityCategory::LIFE_QUALITY:
                 currCategory = "LIFE_QUALITY";
@@ -141,39 +155,17 @@ std::string categoryAsString(const FacilityCategory &category){
 
 }
 
-/*
-    consider changing the order of the string
-*/
 const string Facility::toString() const{
-std::ostringstream oss; //will be destroyed automatically when we leave the function since it's local
 // using the oss method for an efficient string "combiner"
-oss << "facility name: " << this->name 
-    << " category " << categoryAsString(category) 
-    << " price: " << std::to_string(this->price) 
-    << " life quakity score: " << std::to_string(this->lifeQuality_score) 
-    << " economey score: " << std::to_string(this->economy_score) 
-    << " environment score: " << std::to_string(this->environment_score) 
-    << " settlement name: " << this->settlementName 
-    << " status: " 
-    << " time left: " << std::to_string(this->timeLeft);
-return  oss.str(); 
+string returnString =  "facility name: " + this->name 
+    + " category " + categoryAsString() 
+    + " price: " + std::to_string(this->price) 
+    + " life quality score: " + std::to_string(this->lifeQuality_score) 
+    + " economey score: " + std::to_string(this->economy_score) 
+    + " environment score: " + std::to_string(this->environment_score) 
+    + " settlement name: " + this->settlementName 
+    + " status: " 
+    + " time left: " + std::to_string(this->timeLeft);
+return  returnString; 
 }
-        
- //convert the status enum to viable string for the toString method
- // determaning the string using the case method of enum
-std::string statusAsString(const FacilityStatus &status){
-    string currStatus = "";
-        switch (status)
-        {
-        case FacilityStatus::UNDER_CONSTRUCTIONS:
-            currStatus = "UNDER_CONSTRUCTIONS";
-            break;
-        case FacilityStatus::OPERATIONAL:
-            currStatus = "OPERATIONAL";
-            break;
-        default:
-            currStatus = "Unknown status";
-            break;
-        }
-    return currStatus;
-}
+ 
