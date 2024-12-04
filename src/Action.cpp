@@ -8,7 +8,7 @@
 # include "SelectionPolicy.h"
 # include "Settlement.h"
 # include "Action.h"
-
+# include "Settlement.cpp" //becasue we have created a static method
 
 //builder and methods
 BaseAction::BaseAction()
@@ -80,7 +80,7 @@ SimulateStep *SimulateStep::clone() const{
 AddPlan:: AddPlan (const string &settlementName, const string &selectionPolicy) 
 :settlementName(settlementName), selectionPolicy(selectionPolicy){}
 
-//act method
+//act method (AddPlan)
 void AddPlan::act(Simulation &simulation){
     Settlement &settlement = simulation.getSettlement(settlementName);
     SelectionPolicy *myPolicy = nullptr;
@@ -121,19 +121,19 @@ AddPlan *AddPlan::clone() const {
 AddSettlement:: AddSettlement(const string &settlementName, const SettlementType settlementType)
 :settlementName(settlementName),settlementType(settlementType){}
 
-//act (add settlement)
+//act (AddSettlement)
 void:: AddSettlement::act(Simulation &simulation){
         simulation.addSettlement(new Settlement(settlementName,settlementType));
 }
 
-//clone method
+//clone method (AddSettlement)
 AddSettlement *AddSettlement::clone() const{
     return new AddSettlement(this->settlementName, this->settlementType);
 }
 
 //to string method (AddSettlement)
  const std::string AddSettlement::toString() const{
-    return "Settlement Name:" + settlementName + "settlement Type:" + Settlement::typeToString(settlementType);
+    return "Settlement Name:" + settlementName + "settlement Type:" + typeToString(settlementType);
  }
 
 
@@ -152,3 +152,47 @@ class AddFacility : public BaseAction {
         const int economyScore;
         const int environmentScore;*/
 
+
+// AddFacility constractor
+AddFacility::AddFacility(const string &facilityName, const FacilityCategory facilityCategory, const int price, const int lifeQualityScore, const int economyScore, const int environmentScore)
+:facilityName(facilityName),facilityCategory(facilityCategory),price(price),lifeQualityScore(lifeQualityScore),economyScore(economyScore),environmentScore(environmentScore){}
+
+
+//clone method (AddFacility)
+AddFacility *AddFacility::clone() const{
+    return new AddFacility(*this);
+}
+
+
+//to string method (AddFacility)
+const string AddFacility::toString() const{
+   return facilityName ; 
+}
+
+
+
+
+
+ //convert the status enum to viable string for the toString method
+ // determaning the string using the case method of enum
+std::string categoryAsString(const FacilityCategory &category){
+     string currCategory = "";
+            switch (category)
+            {
+            case FacilityCategory::LIFE_QUALITY:
+                currCategory = "LIFE_QUALITY";
+                break;
+            
+            case FacilityCategory::ECONOMY:
+                currCategory = "ECONOMY";
+                break;
+            case FacilityCategory::ENVIRONMENT:
+                currCategory = "ENVIRONMENT";
+                break;
+            default:
+            currCategory = "Unknown";
+            break;
+        }
+        return currCategory;
+
+}
