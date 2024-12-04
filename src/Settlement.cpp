@@ -1,55 +1,56 @@
-#include "Settlement.h"
+#pragma once
 #include <string>
-#include <sstream>
+#include <vector>
+using std::string;
+using std::vector;
 
-// sellement constructur
-// variables: name, type
-Settlement::Settlement(const string &name, SettlementType type)
-    : name(name), type(type)
-{}
+enum class FacilityStatus {
+    UNDER_CONSTRUCTIONS,
+    OPERATIONAL,
+};
+
+enum class FacilityCategory {
+    LIFE_QUALITY,
+    ECONOMY,
+    ENVIRONMENT,
+};
 
 
-// getter for name
-const string &Settlement::getName() const {
-    return this->name;
-}
+class FacilityType {
+    public:
+        FacilityType(const string &name, const FacilityCategory category, const int price, const int lifeQuality_score, const int economy_score, const int environment_score);
+        const string &getName() const;
+        int getCost() const;
+        int getLifeQualityScore() const;
+        int getEnvironmentScore() const;
+        int getEconomyScore() const;
+        FacilityCategory getCategory() const;
 
-// getter for settlement type
-SettlementType Settlement::getType() const{
-    return this->type;
-}
-
-const std::string typeToString(const SettlementType &type){
- //convert the status enum to viable string for the toString method
- // determaning the string using the case method of enum
-string typeStr="";
- 
-    switch(type){
-        case SettlementType::VILLAGE: 
-            typeStr = "VILLAGE";
-            break;
-        case SettlementType::CITY:
-            typeStr = "CITY";
-            break;
-        case SettlementType::METROPOLIS: 
-            typeStr = "METROPOLIS";
-            break;
-    }
-
-    return typeStr;  
-
-}
+    protected:
+        const string name;
+        const FacilityCategory category;
+        const int price;
+        const int lifeQuality_score;
+        const int economy_score;
+        const int environment_score;
+};
 
 
 
-const string Settlement::toString() const{
-    std::ostringstream oss; //will be destroyed automatically when we leave the function since it's local
-    // using the oss method for an efficient string "combiner"
-    oss << "name: " << this->name 
-        <<  " type: " << typeToString(this->type);
-    return  oss.str();
-}
+class Facility: public FacilityType {
 
+    public:
+        Facility(const string &name, const string &settlementName, const FacilityCategory category, const int price, const int lifeQuality_score, const int economy_score, const int environment_score);
+        Facility(const FacilityType &type, const string &settlementName);
+        const string &getSettlementName() const;
+        const int getTimeLeft() const;
+        FacilityStatus step();
+        void setStatus(FacilityStatus status);
+        const FacilityStatus& getStatus() const;
+        const string toString() const;
 
-
-
+    private:
+        const string settlementName;
+        FacilityStatus status;
+        int timeLeft;
+};
