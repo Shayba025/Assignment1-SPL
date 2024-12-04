@@ -117,18 +117,38 @@ AddPlan *AddPlan::clone() const {
 }
 
 
-/*
-class AddSettlement : public BaseAction {
-    public:
-        AddSettlement(const string &settlementName,SettlementType settlementType);
-        void act(Simulation &simulation) override;
-        AddSettlement *clone() const override;
-        const string toString() const override;
-    private:
-        const string settlementName;
-        const SettlementType settlementType;
-};*/
-
-//continue from here
+//AddSettlement constractor
 AddSettlement:: AddSettlement(const string &settlementName, const SettlementType settlementType)
 :settlementName(settlementName),settlementType(settlementType){}
+
+//act (add settlement)
+void:: AddSettlement::act(Simulation &simulation){
+        simulation.addSettlement(new Settlement(settlementName,settlementType));
+}
+
+//clone method
+AddSettlement *AddSettlement::clone() const{
+    return new AddSettlement(this->settlementName, this->settlementType);
+}
+
+//to string method (AddSettlement)
+ const std::string AddSettlement::toString() const{
+    return "Settlement Name:" + settlementName + "settlement Type:" + Settlement::typeToString(settlementType);
+ }
+
+
+/*
+class AddFacility : public BaseAction {
+    public:
+        AddFacility(const string &facilityName, const FacilityCategory facilityCategory, const int price, const int lifeQualityScore, const int economyScore, const int environmentScore);
+        void act(Simulation &simulation) override;
+        AddFacility *clone() const override;
+        const string toString() const override;
+    private:
+        const string facilityName;
+        const FacilityCategory facilityCategory;
+        const int price;
+        const int lifeQualityScore;
+        const int economyScore;
+        const int environmentScore;*/
+
