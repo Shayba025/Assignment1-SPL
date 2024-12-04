@@ -2,8 +2,7 @@
 #include <string>
 #include <sstream>
 
-// sellement constructur
-// variables: name, type
+// settlement constructur
 Settlement::Settlement(const string &name, SettlementType type)
     : name(name), type(type)
 {}
@@ -19,13 +18,12 @@ SettlementType Settlement::getType() const{
     return this->type;
 }
 
-
-const string typeToString(SettlementType type){
- //convert the status enum to viable string for the toString method
- // determaning the string using the case method of enum
+ // convert the status enum to viable string for the toString method
+const string Settlement::typeToString() const {
+ // determaning the string using cases
 string typeStr="";
  
-    switch(type){
+    switch(this->type){
         case SettlementType::VILLAGE: 
             typeStr = "VILLAGE";
             break;
@@ -45,15 +43,15 @@ string typeStr="";
 
 
 const string Settlement::toString() const{
-    std::ostringstream oss; //will be destroyed automatically when we leave the function since it's local
-    // using the oss method for an efficient string "combiner"
-    oss << "name: " << this->name 
-        <<  " type: " << typeToString(this->type);
-    return  oss.str();
+    
+    string returnString = "name: " + this->name 
+        + " type: " + typeToString();
+    return  returnString;
 }
 
-//getting the construction limit based on type
+// getting the construction limit based on type
 const int Settlement::getConstructionLimit() const{
+     // determaning the value using cases
     switch (this->type)
     {
     case SettlementType::VILLAGE:
