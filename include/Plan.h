@@ -21,12 +21,13 @@ class Plan {
         //move constructor
         Plan(Plan&& other) noexcept;
         //move assignment operator
-        Plan& operator=(Plan&& other) noexcept;
+        Plan& operator=(Plan&& other);
         //Destructor 
         ~Plan();
 
         //vector 
         void facilitiesAndUnderConstructionclearer();
+        
 
         const int getlifeQualityScore() const;
         const int getEconomyScore() const;
@@ -41,7 +42,10 @@ class Plan {
         // these 3 r ez to constrcut
         const vector<Facility*> &getFacilities() const;
         void addFacility(Facility* facility);
+        const string statusToString() const;
         const string toString() const;
+        const int getPlan_id() const;
+
 
     private:
         int plan_id;

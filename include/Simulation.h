@@ -13,15 +13,14 @@ class SelectionPolicy;
 class Simulation {
     public:
         Simulation(const string &configFilePath);
-        void HandleConfigFileRow(string row);
         void start();
-        void addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy);
+        void addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy); 
         void addAction(BaseAction *action);
-        bool addSettlement(Settlement *settlement);
-        bool addFacility(FacilityType facility);
-        bool isSettlementExists(const string &settlementName);
-        Settlement &getSettlement(const string &settlementName);
-        Plan &getPlan(const int planID);
+        bool addSettlement(Settlement *settlement); // yes
+        bool addFacility(FacilityType facility); // yes
+        bool isSettlementExists(const string &settlementName); // yes
+        Settlement &getSettlement(const string &settlementName); // yes
+        Plan &getPlan(const int planID); // problem
         void step();
         void close();
         void open();
