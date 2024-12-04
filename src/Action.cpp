@@ -50,16 +50,16 @@ void SimulateStep::act(Simulation &simulation){
 }
 
 
-//toString method
+//toString method (SimulateStep:)
 const string SimulateStep::toString()const  {
 string statusStr = "";
 
     if(this->getStatus() == ActionStatus::ERROR){  
-     statusStr = "ERROR"; 
+     statusStr = "ERROR: Couldn't simulate step"; 
      }            
 
     if(this->getStatus() == ActionStatus::COMPLETED){
-        statusStr = "COMPLETED"; 
+        statusStr = "imulate Step: COMPLETED"; 
     }
 
     string numOfStepsStr = std::to_string(numOfSteps);
@@ -69,11 +69,10 @@ string statusStr = "";
 
 
 
-//clone method
+//clone method (SimulateStep)
 SimulateStep *SimulateStep::clone() const{
     return new SimulateStep(*this);
 }
-
 
 
 //add plan builder
@@ -133,10 +132,14 @@ AddSettlement *AddSettlement::clone() const{
 
 //to string method (AddSettlement)
  const std::string AddSettlement::toString() const{
-    return "Settlement Name:" + settlementName + "settlement Type:" + typeToString(settlementType);
+    if(this->getStatus() == ActionStatus::ERROR){
+        return "AddSettlement:: ERROR";
+    }
+    else{
+        return "Settlemet Name: COMPLETED  Settlement Name:" + settlementName + "settlement Type:" + typeToString(settlementType);
+ 
+    }
  }
-
-
 /*
 class AddFacility : public BaseAction {
     public:
@@ -166,16 +169,17 @@ AddFacility *AddFacility::clone() const{
 
 //to string method (AddFacility)
 const string AddFacility::toString() const{
-   return facilityName ; 
+   return  "Add Facility: Facility Name:" + facilityName + "Facility Category:" + categoryAsString(facilityCategory) 
+             + "price:" + std::to_string(price) + "Life Quality Score:" + std::to_string(lifeQualityScore) + 
+            "Economy Score:" + std::to_string(economyScore) + "Enviroment Score:" + std::to_string(environmentScore); 
 }
-
 
 
 
 
  //convert the status enum to viable string for the toString method
  // determaning the string using the case method of enum
-std::string categoryAsString(const FacilityCategory &category){
+    string categoryAsString(const FacilityCategory &category){
      string currCategory = "";
             switch (category)
             {
