@@ -244,7 +244,7 @@ void Plan::step(){
         //start choosing buildings to build
         //step 2:
         //adding size_t instead of int
-        size_t constructionLimit = this->settlement.getConstructionLimit();
+        size_t constructionLimit = this->settlement.getConstructionLimit();//there is no method as this one in header
         while(this->underConstruction.size() < constructionLimit){
             Facility *new_facility = new Facility(selectionPolicy->selectFacility(facilityOptions),settlement.getName());
             // consider adding case of what if facility is null ptr maybe printh somesheet
