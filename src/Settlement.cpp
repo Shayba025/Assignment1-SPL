@@ -20,12 +20,12 @@ SettlementType Settlement::getType() const{
 }
 
 
-const string Settlement::typeToString() const {
+const string typeToString(SettlementType type){
  //convert the status enum to viable string for the toString method
  // determaning the string using the case method of enum
 string typeStr="";
  
-    switch(this->type){
+    switch(type){
         case SettlementType::VILLAGE: 
             typeStr = "VILLAGE";
             break;
@@ -48,7 +48,7 @@ const string Settlement::toString() const{
     std::ostringstream oss; //will be destroyed automatically when we leave the function since it's local
     // using the oss method for an efficient string "combiner"
     oss << "name: " << this->name 
-        <<  " type: " << typeToString();
+        <<  " type: " << typeToString(this->type);
     return  oss.str();
 }
 
