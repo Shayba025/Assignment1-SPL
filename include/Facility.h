@@ -47,6 +47,12 @@ class Facility: public FacilityType {
         FacilityStatus step();
         void setStatus(FacilityStatus status);
         const FacilityStatus& getStatus() const;
+
+        // modifying the enums types to string so we could return them in the toString method
+        // mainly to keep the code "cleaner" and better understood
+        const string statusAsString() const;
+        const string categoryAsString() const;
+
         const string toString() const;
 
     private:
