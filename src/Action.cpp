@@ -55,7 +55,7 @@ const string SimulateStep::toString()const  {
 string statusStr = "";
 
     if(this->getStatus() == ActionStatus::ERROR){  
-     statusStr = "ERROR: Couldn't simulate step"; 
+     statusStr = "Couldn't simulate step"; 
      }            
 
     else{
@@ -107,15 +107,12 @@ void AddPlan::act(Simulation &simulation){
 //to string method (AddPlan)
  const string AddPlan::toString() const {
     if(this->getStatus() == ActionStatus::ERROR){  
-     return"ERROR: Couldn't Add Plan"; 
+     return"Couldn't Add Plan"; 
      }            
 
     else{
-          return " Add Plan Status: COMPLETED Settlement name:" + this->settlementName + "Selection Policy:" + this->selectionPolicy;
-    }
-
-
-   
+          return "Add Plan Status: COMPLETED Settlement name:" + this->settlementName + "Selection Policy:" + this->selectionPolicy; 
+    }  
  }
 
 
@@ -131,7 +128,16 @@ AddSettlement:: AddSettlement(const string &settlementName, const SettlementType
 
 //act (AddSettlement)
 void:: AddSettlement::act(Simulation &simulation){
+
+    if(simulation.isSettlementExists(settlementName)){
+    error("Error: Settlement already exists");
+    
+    }
+    else{
         simulation.addSettlement(new Settlement(settlementName,settlementType));
+        complete();
+    }
+        
 }
 
 //clone method (AddSettlement)
@@ -149,20 +155,7 @@ AddSettlement *AddSettlement::clone() const{
  
     }
  }
-/*
-class AddFacility : public BaseAction {
-    public:
-        AddFacility(const string &facilityName, const FacilityCategory facilityCategory, const int price, const int lifeQualityScore, const int economyScore, const int environmentScore);
-        void act(Simulation &simulation) override;
-        AddFacility *clone() const override;
-        const string toString() const override;
-    private:
-        const string facilityName;
-        const FacilityCategory facilityCategory;
-        const int price;
-        const int lifeQualityScore;
-        const int economyScore;
-        const int environmentScore;*/
+
 
 
 // AddFacility constractor
@@ -173,8 +166,15 @@ AddFacility::AddFacility(const string &facilityName, const FacilityCategory faci
 
 //act method (AddFacility)
 void::AddFacility::act(Simulation &simulation){
-        simulation.addFacility(new FacilityType(facilityName, facilityCategory, price, lifeQualityScore, economyScore, environmentScore));
-}////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    FacilityType facility (facilityName, facilityCategory, price, lifeQualityScore, economyScore, environmentScore);
+
+        if()
+        }
+        else{
+            (simulation.addFacility(facility)){
+            complete();
+        }
+}//////////////////////////////////////////////////// complete act with the is facility exists method
 
 
 
@@ -189,7 +189,6 @@ const string AddFacility::toString() const{
     if(this->getStatus() == ActionStatus::ERROR){
         return "Add Facility Status: ERROR";
     }
-
     else{
    return  "Add Facility Status: COMPLETED Facility Name:" + facilityName + "Facility Category:" + categoryAsString(facilityCategory) 
              + "price:" + std::to_string(price) + "Life Quality Score:" + std::to_string(lifeQualityScore) + 
@@ -223,3 +222,18 @@ const string AddFacility::toString() const{
         return currCategory;
 
 }
+
+/*
+class PrintPlanStatus: public BaseAction {
+    public:
+        PrintPlanStatus(int planId);
+        void act(Simulation &simulation) override;
+        PrintPlanStatus *clone() const override;
+        const string toString() const override;
+    private:
+        const int planId;
+};*/
+
+//print plan constractor
+PrintPlanStatus::PrintPlanStatus():planId(planId){}
+
