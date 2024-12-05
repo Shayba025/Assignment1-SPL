@@ -50,7 +50,7 @@ void SimulateStep::act(Simulation &simulation){
 }
 
 
-//toString method (SimulateStep:)
+//to String method (SimulateStep:)
 const string SimulateStep::toString()const  {
 string statusStr = "";
 
@@ -58,13 +58,13 @@ string statusStr = "";
      statusStr = "ERROR: Couldn't simulate step"; 
      }            
 
-    if(this->getStatus() == ActionStatus::COMPLETED){
-        statusStr = "imulate Step: COMPLETED"; 
+    else{
+        statusStr = "Simulate Step Status: COMPLETED"; 
     }
 
     string numOfStepsStr = std::to_string(numOfSteps);
 
-    return "status:" + statusStr + "Number Of Steps:" + numOfStepsStr;
+    return "Status:" + statusStr + "Number Of Steps:" + numOfStepsStr;
 }
 
 
@@ -106,7 +106,16 @@ void AddPlan::act(Simulation &simulation){
 
 //to string method (AddPlan)
  const string AddPlan::toString() const {
-    return "Settlement name:" + this->settlementName + "Selection Policy:" + this->selectionPolicy;
+    if(this->getStatus() == ActionStatus::ERROR){  
+     return"ERROR: Couldn't Add Plan"; 
+     }            
+
+    else{
+          return " Add Plan Status: COMPLETED Settlement name:" + this->settlementName + "Selection Policy:" + this->selectionPolicy;
+    }
+
+
+   
  }
 
 
@@ -133,10 +142,10 @@ AddSettlement *AddSettlement::clone() const{
 //to string method (AddSettlement)
  const std::string AddSettlement::toString() const{
     if(this->getStatus() == ActionStatus::ERROR){
-        return "AddSettlement:: ERROR";
+        return "Add Settlement:: ERROR";
     }
     else{
-        return "Settlemet Name: COMPLETED  Settlement Name:" + settlementName + "settlement Type:" + typeToString(settlementType);
+        return "Settlemet Name Status: COMPLETED  Settlement Name:" + settlementName + "settlement Type:" + typeToString(settlementType);
  
     }
  }
@@ -161,6 +170,14 @@ AddFacility::AddFacility(const string &facilityName, const FacilityCategory faci
 :facilityName(facilityName),facilityCategory(facilityCategory),price(price),lifeQualityScore(lifeQualityScore),economyScore(economyScore),environmentScore(environmentScore){}
 
 
+
+//act method (AddFacility)
+void::AddFacility::act(Simulation &simulation){
+        simulation.addFacility(new FacilityType(facilityName, facilityCategory, price, lifeQualityScore, economyScore, environmentScore));
+}////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 //clone method (AddFacility)
 AddFacility *AddFacility::clone() const{
     return new AddFacility(*this);
@@ -169,9 +186,15 @@ AddFacility *AddFacility::clone() const{
 
 //to string method (AddFacility)
 const string AddFacility::toString() const{
-   return  "Add Facility: Facility Name:" + facilityName + "Facility Category:" + categoryAsString(facilityCategory) 
+    if(this->getStatus() == ActionStatus::ERROR){
+        return "Add Facility Status: ERROR";
+    }
+
+    else{
+   return  "Add Facility Status: COMPLETED Facility Name:" + facilityName + "Facility Category:" + categoryAsString(facilityCategory) 
              + "price:" + std::to_string(price) + "Life Quality Score:" + std::to_string(lifeQualityScore) + 
             "Economy Score:" + std::to_string(economyScore) + "Enviroment Score:" + std::to_string(environmentScore); 
+            }
 }
 
 
