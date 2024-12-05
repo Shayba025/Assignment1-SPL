@@ -9,7 +9,6 @@ class SelectionPolicy {
         virtual const string toString() const = 0;
         virtual SelectionPolicy* clone() const = 0;
         virtual ~SelectionPolicy() = default;
-        std::string getSelectionPolicyName() const;//getter for selection policy name, used in action under "ChangePlanPolicy" 
 };
 
 class NaiveSelection: public SelectionPolicy {
