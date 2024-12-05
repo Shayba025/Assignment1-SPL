@@ -260,3 +260,8 @@ const string Plan::toString() const{
 
     return returnStr;
 }
+
+//getter for plan's current selection policy 
+const SelectionPolicy& Plan::getSelectionPolicy() const{
+    return *this->selectionPolicy;
+}

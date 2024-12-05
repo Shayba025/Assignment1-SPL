@@ -46,6 +46,9 @@ class Plan {
         // adding get function for plan_id
         const int getPlan_id() const;
 
+         //added a getter for selection policy
+         const SelectionPolicy& getSelectionPolicy() const;
+
 
     private:
         int plan_id;
@@ -56,5 +59,7 @@ class Plan {
         vector<Facility*> underConstruction;
         const vector<FacilityType> &facilityOptions;
         int life_quality_score, economy_score, environment_score;
+
+       
 };
 
