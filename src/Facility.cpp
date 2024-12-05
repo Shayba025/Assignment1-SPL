@@ -169,3 +169,14 @@ string returnString =  "facility name: " + this->name
 return  returnString; 
 }
  
+
+ string FacilityType::toString(){
+    string returnString =  "facility name: " + this->name 
+    
+    + " price: " + std::to_string(this->price) 
+    + " life quality score: " + std::to_string(this->lifeQuality_score) 
+    + " economey score: " + std::to_string(this->economy_score) 
+    + " environment score: " + std::to_string(this->environment_score); 
+    
+    return  returnString; 
+ }
