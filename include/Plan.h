@@ -39,15 +39,12 @@ class Plan {
         const vector<Facility*> &getFacilities() const;
         void addFacility(Facility* facility);
 
-        // modyfing status to string variable mainly to avoid messy code in the to String function and make it more readable
+        // modyfing status to string variable mainly to avoid messy code in the to String function and make it more radable
         const string statusToString() const;
         const string toString() const;
 
         // adding get function for plan_id
         const int getPlan_id() const;
-
-         //added a getter for selection policy
-         const SelectionPolicy& getSelectionPolicy() const;
 
 
     private:
@@ -59,7 +56,5 @@ class Plan {
         vector<Facility*> underConstruction;
         const vector<FacilityType> &facilityOptions;
         int life_quality_score, economy_score, environment_score;
-
-       
 };
 
