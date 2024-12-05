@@ -86,19 +86,24 @@ Simulation::Simulation(const string &configFilePath)
     configfile.close();
 }
 
-
+// starting the simulation
 void Simulation::start(){
     // first we check the simulation is not running
     if(this->isRunning){
-        std::count << "the Simulation alreadt running you need to clsoe it brfore starting again"
+        std::cout << "the Simulation alreadt running you need to clsoe it brfore starting again";
     }
     else{
-
+        this->isRunning = true;
+        while(isRunning){
+            
+        }
     }
 }
 
 
 void Simulation::addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy){
+    // we assume the action that called this function is the last one sice after every call for action we call it's 
+    // simulation function so by default our action is the last action 
     // create and insert
     this->plans.push_back(*new Plan(this->planCounter, settlement, selectionPolicy, this->facilitiesOptions));
     // making changes after init
@@ -106,6 +111,16 @@ void Simulation::addPlan(const Settlement &settlement, SelectionPolicy *selectio
     
     // delete(selectionPolicy);
 }
+
+
+
+
+// unfinished
+// adding new Action to our action log, we need to make sure it's 
+void Simulation::addAction(BaseAction *action){
+    this->actionsLog.push_back(action);
+}
+
 
 bool Simulation::addSettlement(Settlement *settlement){
     if(isSettlementExists(settlement->getName())){
@@ -156,6 +171,7 @@ Settlement &Simulation::getSettlement(const string &settlementName)
     static Settlement nullSttlement("nullSettlement", SettlementType::CITY);
     return nullSttlement;
 }
+
 
 
 void Simulation::to_string(){
