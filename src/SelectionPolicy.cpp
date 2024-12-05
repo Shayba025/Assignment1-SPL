@@ -1,3 +1,6 @@
+
+
+
 //#pragma once
 #include <vector>
 #include "Facility.h"
@@ -134,20 +137,4 @@ const string SustainabilitySelection::toString() const{
 //clone method
 SustainabilitySelection* SustainabilitySelection::clone() const{
     return new SustainabilitySelection (*this);
-}
-
-//getter for Selection Policy Name
-std::string Plan::getSelectionPolicyName() const {
-    if (selectionPolicy == &naivePolicy) {
-        return "nve";
-    }
-    if (selectionPolicy == &balancedPolicy) {
-        return "bal";
-    }
-    if (selectionPolicy == &economyPolicy) {
-        return "eco";
-    }
-    if (selectionPolicy == &sustainabilityPolicy) {
-        return "env";
-    }
 }
