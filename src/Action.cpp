@@ -235,5 +235,67 @@ class PrintPlanStatus: public BaseAction {
 };*/
 
 //print plan constractor
-PrintPlanStatus::PrintPlanStatus():planId(planId){}
+PrintPlanStatus::PrintPlanStatus(int planId):planId(planId){}
 
+//act method (print plan)
+void PrintPlanStatus::act(Simulation &simulation){
+    Plan myPlan = simulation.getPlan(planId);
+    std::cout << "Plan Status:" + myPlan.toString() << std::endl;
+}
+//clone method (print plan)
+ PrintPlanStatus *PrintPlanStatus::clone() const{
+    return new PrintPlanStatus(*this);
+ }
+
+//to string method (print plan)
+ const string PrintPlanStatus::toString() const{//need to implement a method that returns if the plan exists
+    if(this.get)
+ }
+
+
+
+/*
+class ChangePlanPolicy : public BaseAction {
+    public:
+        ChangePlanPolicy(const int planId, const string &newPolicy);
+        void act(Simulation &simulation) override;
+        ChangePlanPolicy *clone() const override;
+        const string toString() const override;
+    private:
+        const int planId;
+        const string newPolicy;
+};*/
+
+//change plan policy builder
+ChangePlanPolicy::ChangePlanPolicy(const int planId, const string &newPolicy)
+:planId(planId), newPolicy(newPolicy){}
+
+//act method (change plan policy)
+void ChangePlanPolicy::act(Simulation &simulation){
+
+    if(((simulation.getPlan(planId)).getSelectionPolicy()).getSelectionPolicyName() == newPolicy
+    || simulation.getPlan(planId)){
+        error("Cannot change selection policy");
+    }
+
+    //to check which policy is needed
+    if(newPolicy=="nve"){
+        (simulation.getPlan(planId)).setSelectionPolicy(new NaiveSelection);
+        complete();
+    }
+    else if(newPolicy=="bal"){
+        (simulation.getPlan(planId)).setSelectionPolicy(new BalancedSelection(0,0,0));//defult values
+        complete();
+    }
+    else if(newPolicy=="eco"){
+        (simulation.getPlan(planId)).setSelectionPolicy(new EconomySelection);
+        complete();
+    }
+    else if(newPolicy=="env"){
+        (simulation.getPlan(planId)).setSelectionPolicy(new SustainabilitySelection);
+        complete();
+    }
+    else{
+        error("");
+    }
+}
