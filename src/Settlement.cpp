@@ -43,7 +43,6 @@ string typeStr="";
 
 
 const string Settlement::toString() const{
-    
     string returnString = "name: " + this->name 
         + " type: " + typeToString();
     return  returnString;
