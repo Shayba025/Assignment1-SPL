@@ -12,9 +12,9 @@ class SelectionPolicy;
 
 class Simulation {
     public:
-        Simulation(const string &configFilePath);
+        Simulation(const string &configFilePath); // yes
         void start();
-        void addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy); 
+        void addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy); //yes
         void addAction(BaseAction *action);
         bool addSettlement(Settlement *settlement); // yes
         bool addFacility(FacilityType facility); // yes
@@ -24,6 +24,8 @@ class Simulation {
         void step();
         void close();
         void open();
+
+        void to_string();
 
     private:
         bool isRunning;
