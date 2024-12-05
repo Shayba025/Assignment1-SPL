@@ -39,5 +39,8 @@ int main(){
    Simulation *s1 = new Simulation("config_file.txt");
    s1->to_string();
     return 0;
+    
+
+    std::cout << (s1[0].getPlan()).toString() << std::endl;
 
 }

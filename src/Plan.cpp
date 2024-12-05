@@ -239,25 +239,27 @@ const string Plan::toString() const{
         + " Settlement " + this->settlement.getName() + " | ";
         // if is ullptr can't use the get name function run time compilation
     if (selectionPolicy != nullptr) {
-            returnStr + "selection policy: " + selectionPolicy->toString() + " | "; 
+            returnStr += "selection policy: " + selectionPolicy->toString() + " | "; 
 }   else {
-         returnStr + "selection policy: no policy given  | ";
+         returnStr += "selection policy: no policy given  | ";
     }
-        returnStr + " status : " + statusToString() + " | "
+        returnStr += " status : " + statusToString() + " | "
         + "life quality score: " + std::to_string(life_quality_score) + " | "
         + "economy score: " + std::to_string(economy_score) + " | "
         + "environment score: " + std::to_string(environment_score) + "\n"
         + "facilities: ";
         // iterating other the facilities
         for (const Facility* facility : this->facilities){
-            returnStr + "  | " + facility->toString() + "  | ";
+            returnStr += "  | " + facility->toString() + "  | ";
         }
-        returnStr + "under construction : ";
+        returnStr += "under construction : ";
         // iterating other the under construction facilities
          for (const Facility* facility : this->underConstruction){
-            returnStr + "  | " + facility->toString() + "  | ";
+            returnStr += "  | " + facility->toString() + "  | ";
         }
 
 
     return returnStr;
 }
+
+
