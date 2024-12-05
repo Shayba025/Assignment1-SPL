@@ -24,7 +24,7 @@ class Settlement {
 
         const string toString() const;
         
-        // adding the getConstructionLimit for the step method in plan.
+        // adding the getConstructionLimit for the step method
         const int getConstructionLimit() const;
 
         private:
