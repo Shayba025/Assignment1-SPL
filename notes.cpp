@@ -4,4 +4,7 @@
 2. check if returnung nullptr in bakanced policy is optional becasue it's only getts mark yellow and we dont have to deal with the case of facilities options being empty 
 
 3. verify that type to string compiles in the action class under:  to string method (AddSettlement)
+
+
+4. finish ChangePlanPolicy
 */
