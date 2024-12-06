@@ -1,15 +1,15 @@
 
-
-
 //#pragma once
 #include <vector>
 #include "Facility.h"
 #include "SelectionPolicy.h"
 #include <algorithm> 
 #include <stdexcept>
+#include <iostream>
 #include <climits>
 using std::string;
 using std::vector;
+
 
 
 // Naive selection:
@@ -42,7 +42,7 @@ const FacilityType& BalancedSelection::selectFacility(const vector<FacilityType>
    const FacilityType *best = nullptr; // a facility type to return
    int scoreDiff = INT_MAX; // start with the largest int just for finding the smallest value
 
-    for(const FacilityType &currFacility : facilitiesOptions){
+    for(auto &currFacility : facilitiesOptions){
         
         int facilityLifeQuality = currFacility.getLifeQualityScore();
         int facilityEnvironment = currFacility.getEnvironmentScore();
@@ -80,18 +80,32 @@ BalancedSelection* BalancedSelection::clone() const{
 
 
 //Economy Selection:
-EconomySelection::EconomySelection() : lastSelectedIndex(-1) {}
+EconomySelection::EconomySelection() 
+: lastSelectedIndex(-1) {}
+
+
 const FacilityType& EconomySelection::selectFacility(const vector<FacilityType>& facilitiesOptions){
-    //adding size_t intead of int
-    if(!facilitiesOptions.empty()){
-        for(size_t i=0; i<facilitiesOptions.size();i++){
-            if(facilitiesOptions[i].getCategory() == FacilityCategory::ECONOMY){ //looking for a facillity who is form the economy category 
-                this->lastSelectedIndex = (this->lastSelectedIndex + 1) % facilitiesOptions.size(); //moving on to the next facillity
-            return facilitiesOptions[i];
-            }
-        }
+      //adding size_t intead of int
+        // if the last facility that we picke was the last facility in the vercotr we reset it to -1 to avoid runtime error
+        
+        int indexPlacer = this->lastSelectedIndex;
+        bool madeFullCircle = false;
+        while(!madeFullCircle){
+            if (this->lastSelectedIndex >= static_cast<int>(facilitiesOptions.size())){
+            this->lastSelectedIndex = -1;
     }
-            return facilitiesOptions[0];
+            this->lastSelectedIndex = (this->lastSelectedIndex + 1);
+            if(facilitiesOptions[this->lastSelectedIndex].getCategory() == FacilityCategory::ECONOMY){
+                return facilitiesOptions[this->lastSelectedIndex];
+            }
+            if(this->lastSelectedIndex == indexPlacer){
+                madeFullCircle = true;
+            }
+            
+        }
+        
+                    return facilitiesOptions[0];
+
 
 }
 
@@ -114,19 +128,33 @@ SustainabilitySelection::SustainabilitySelection()
     : lastSelectedIndex(-1) {}
 
 const FacilityType& SustainabilitySelection::selectFacility(const vector<FacilityType>& facilitiesOptions){
-    //adding size_t instead of int
-    if(!facilitiesOptions.empty()){
-        for(size_t i=0; i<facilitiesOptions.size();i++){
-            if(facilitiesOptions[i].getCategory() == FacilityCategory::ENVIRONMENT){ // looking for a facillity who is form the ENVIRONMENT category 
-                this->lastSelectedIndex = (this->lastSelectedIndex + 1) % facilitiesOptions.size(); // moving on to the next facillity
-            return facilitiesOptions[i];
+    //adding size_t intead of int
+        // if the last facility that we picke was the last facility in the vercotr we reset it to -1 to avoid runtime error
+        
+        int indexPlacer = this->lastSelectedIndex;
+        bool madeFullCircle = false;
+        while(!madeFullCircle){
+            if (this->lastSelectedIndex >= static_cast<int>(facilitiesOptions.size())){
+            this->lastSelectedIndex = -1;
+    }
+            this->lastSelectedIndex = (this->lastSelectedIndex + 1);
+            if(facilitiesOptions[this->lastSelectedIndex].getCategory() == FacilityCategory::ENVIRONMENT){
+                return facilitiesOptions[this->lastSelectedIndex];
             }
+            if(this->lastSelectedIndex == indexPlacer){
+                madeFullCircle = true;
+            }
+            
+        }
+        
+                    return facilitiesOptions[0];
+
+
+
     }
-    }
-    // to avoid warning, based on instruction we'll have atleast 1 env type in the options
-    return facilitiesOptions[0];
+
     
-}
+
 
 //to string method
 const string SustainabilitySelection::toString() const{
