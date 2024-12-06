@@ -30,10 +30,7 @@ Simulation::Simulation(const string &configFilePath)
     configfile.close();
 }
 
-
-//rule of 5 implamantation
-
-// distructor
+// dustructor
 Simulation::~Simulation() {
     // delete all action logs
     for (auto action : actionsLog) {
@@ -52,25 +49,6 @@ Simulation::~Simulation() {
 
 }
 
-
-
-//copy constraction need to finish
-Simulation::Simulation(const Simulation &other)
-:isRunning(other.isRunning), planCounter(other.planCounter), facilitiesOptions(other.facilitiesOptions) {
-    //actions deep copy
-    for(auto *actions : other.actionsLog){
-        actionsLog.push_back(actions->clone());
-    }
-
-    // settlements deep copy
-    for(auto *settlements : other.settlements ){
-        settlements.push_back(new Settlement(*settlements));
-    }
-
-    
-
-    
-}
 
 //move constractor
 Simulation::Simulation(Simulation &&other) noexcept
@@ -228,7 +206,8 @@ void Simulation::addPlan(const Settlement &settlement, SelectionPolicy *selectio
     // we assume the action that called this function is the last one sice after every call for action we call it's 
     // simulation function so by default our action is the last action 
     // create and insert
-    this->plans.push_back(*new Plan(this->planCounter, settlement, selectionPolicy, this->facilitiesOptions));
+    Plan *addedPlan = new Plan(this->planCounter, settlement, selectionPolicy, this->facilitiesOptions);
+    this->plans.push_back(*addedPlan);
     // making changes after init
     this->planCounter = this->planCounter + 1;
     
@@ -303,7 +282,17 @@ Plan &Simulation::getPlan(const int planID){
     // return
 }
 
-
+bool Simulation::isPlanExisting(const int planID){
+    if(planID < 0 || static_cast<size_t>(planID > plans.size())){
+        return false;
+    }
+     for (Plan &plan : plans) {
+        if (plan.getPlan_id() == planID) {  // Assuming Plan has a method getID() to get its ID
+            return true;;
+        }
+    }
+    return false;
+}
 
 
 void Simulation::step(){
@@ -334,17 +323,47 @@ void Simulation::to_string(){
 void  Simulation::validateCommnad(vector<string> &commandAsVector){
     // dealing with SimulateStep command:
     if(commandAsVector[0] == "step"){
+        // valid input step <int>
         if(commandAsVector.size() == 2) {
-            
-                // we assume it's a positive number as instructed
+            // we assume it's a positive number as instructed
             int numOfSteps = std::stoi(commandAsVector[1] );
-           
-
                 executeStepCommand(numOfSteps);
-               
-
             
         }
+    }
+    else if(commandAsVector[0] == "plan"){
+        // valid input plan <settlement_name> <selection_policy>
+        if(commandAsVector.size() == 3) {
+            if(isSettlementExists(commandAsVector[1])){
+                executePlanCommand(commandAsVector[1], commandAsVector[2]);
+            }
+            else{
+                // add error settlement doesnt exist
+            }
+        }
+        else{
+            // error invalide input
+        }
+        
+    }
+
+    else if(commandAsVector[0] == "settlement"){
+        // valid input settlement <settlement_name> <settlement_type>
+        if(commandAsVector.size() == 3) {
+            executeSettlementCommnad(commandAsVector[0], static_cast<SettlementType>(std::stoi(commandAsVector[2])));
+    }
+
+
+    
+    }
+        else if(commandAsVector[0] == "planStatus"){
+        // valid input settlement <settlement_name> <settlement_type>
+        if(commandAsVector.size() == 2) {
+            executePrintPlanStatusCommnad(std::stoi(commandAsVector[1]));
+        }
+    else{
+        // error invalid input
+    }
     }
 }
 
@@ -358,3 +377,21 @@ void Simulation::executeStepCommand(int &numOfSteps){
 
 }
 
+void Simulation::executePlanCommand(const string &settlementName, const string &selectionPolicy){
+    BaseAction *planAction = new AddPlan(settlementName, selectionPolicy);
+    addAction(planAction);
+    planAction->act(*this);
+}
+
+
+void Simulation::executeSettlementCommnad(const string &name, SettlementType type){
+    BaseAction *settlementAction = new AddSettlement(name, type);
+    addAction(settlementAction);
+    settlementAction->act(*this);
+}
+
+void Simulation::executePrintPlanStatusCommnad(int plan_id){
+    BaseAction *printPlanAction = new PrintPlanStatus(plan_id);
+    addAction(printPlanAction);
+    printPlanAction->act(*this);
+}
