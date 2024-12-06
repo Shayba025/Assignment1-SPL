@@ -2,7 +2,7 @@
 #include <string>
 #include <sstream>
 
- 
+ #include <iostream>
  
 // FacilityType Constructor:
  FacilityType::FacilityType(const string &name, const FacilityCategory category, const int price, const int lifeQuality_score, const int economy_score, const int environment_score)
@@ -92,12 +92,12 @@ const int Facility::getTimeLeft() const{
 // a step for facility means subtructing 1 time unit from timeleft and if timeLeft == 0 we finished building so we need to change the status as well
 // if the price given was 0 or below the status is operational from the constructure so no need to check it again.
 FacilityStatus Facility::step(){
-    if(this->timeLeft > 0){
-       this->timeLeft =  this->timeLeft - 1;
+      
+       this->timeLeft --;
        if(this->timeLeft == 0){
         setStatus(FacilityStatus::OPERATIONAL); 
        }
-    }
+    
     return this->status;
 }
 
