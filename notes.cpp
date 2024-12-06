@@ -7,4 +7,6 @@
 
 
 4. finish ChangePlanPolicy
+
+5. check copy constractor of simulation with plan
 */
