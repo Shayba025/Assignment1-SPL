@@ -5,6 +5,8 @@
 #include "Facility.h"
 #include "SelectionPolicy.h"
 #include "Plan.h"
+#include <cinttypes>
+#include "Action.h"
 
 Simulation::Simulation(const string &configFilePath)
   : isRunning(false),
@@ -20,9 +22,42 @@ Simulation::Simulation(const string &configFilePath)
     while (std::getline(configfile, line)) {
         // spliting the text into lines
         vector<string> arguments = Auxiliary::parseArguments(line);
+        // if the line is not empty meaning there is a text there
+        if(arguments.size() > 0){
+            createObjectBasedType(arguments);
+        }
+}
+    configfile.close();
+}
 
+// dustructor
+Simulation::~Simulation() {
+    // delete all action logs
+    for (auto action : actionsLog) {
+        delete action; 
+        action = nullptr;
+    }
+    // delete all settlement
+    for (auto settlement : settlements) {
+        delete settlement; 
+        settlement = nullptr;
+    }
+    this->actionsLog.clear();
+    this->settlements.clear();
+    this->plans.clear();
+    this->facilitiesOptions.clear();
+
+}
+
+
+
+
+
+
+
+// helpr function for constructor - creating the object based the specific type from argument
+void Simulation::createObjectBasedType(vector<string> &arguments){
         // the arguments[0] is the type of the object we want to create
-
         // creating settlement
         if(arguments[0] == "settlement")
         {
@@ -33,7 +68,8 @@ Simulation::Simulation(const string &configFilePath)
             Settlement *newSettlement = new Settlement(arguments[1],typeAsInt);
             addSettlement(newSettlement);
         }
-            
+        
+        //creating facility
         else if(arguments[0] == "facility"){
             // we create a new facilityOption
             // we declate new facility while converting the text variables to the type the constructor ueses
@@ -41,64 +77,94 @@ Simulation::Simulation(const string &configFilePath)
             addFacility(*newFacility);
             // we're not adding a pointer but the object itself so we delete the object we created to avoide memory leak
             delete(newFacility);
+            newFacility = nullptr;
 
         }
+        // creating Plan
         else if(arguments[0] == "plan"){
             // creating the plan based on the selection policy
             // if the settelement doensn't exists we can't do anything
             if(isSettlementExists(arguments[1])){
-                SelectionPolicy *selectedPolicy;
-                if(arguments[2] == "eco"){
-                    selectedPolicy = new EconomySelection();
-                    addPlan(getSettlement(arguments[1]), selectedPolicy);
-                    // we're not adding a pointer but the object itself so we delete the object we created to avoide memory leak
-                    delete(selectedPolicy);
+                createPlanBasedPolicy(arguments);
+              
+        }
+}
 
-                }
-                else if(arguments[2] == "bal"){
-                    // since we creating new plan it's scores are by default 0 (we ahven't build anything)
-                    selectedPolicy = new BalancedSelection(0,0,0);
-                    addPlan(getSettlement(arguments[1]), selectedPolicy);
-                    // we're not adding a pointer but the object itself so we delete the object we created to avoide memory leak
-                    delete(selectedPolicy);
-                    
-                }
-                else if(arguments[2] == "env"){
-                    selectedPolicy = new SustainabilitySelection();
-                    addPlan(getSettlement(arguments[1]), selectedPolicy);
-                    // we're not adding a pointer but the object itself so we delete the object we created to avoide memory leak
-                    delete(selectedPolicy);
+          
+}
 
-                }
-                else if(arguments[2] == "nve"){
-                    selectedPolicy = new NaiveSelection();
-                    addPlan(getSettlement(arguments[1]), selectedPolicy);
-                    // we're not adding a pointer but the object itself so we delete the object we created to avoide memory leak
-                    delete(selectedPolicy);
-            }
-            
-         }
+
+
+// helper function for createObjectBasedType
+// creating the right policy for the plan
+void Simulation::createPlanBasedPolicy(vector<string> &arguments){
+      SelectionPolicy *selectedPolicy;
+      if(arguments[2] == "eco"){  
+        selectedPolicy = new EconomySelection();
+        addPlan(getSettlement(arguments[1]), selectedPolicy);
+        // we're not adding a pointer but the object itself so we delete the object we created to avoide memory leak
+        delete(selectedPolicy);
+        selectedPolicy = nullptr;
+
+        }
+        else if(arguments[2] == "bal"){
+            // since we creating new plan it's scores are by default 0 (we ahven't build anything)
+            selectedPolicy = new BalancedSelection(0,0,0);
+            addPlan(getSettlement(arguments[1]), selectedPolicy);
+            // we're not adding a pointer but the object itself so we delete the object we created to avoide memory leak
+            delete(selectedPolicy);
+            selectedPolicy = nullptr;
             
         }
+        else if(arguments[2] == "env"){
+            selectedPolicy = new SustainabilitySelection();
+            addPlan(getSettlement(arguments[1]), selectedPolicy);
+            // we're not adding a pointer but the object itself so we delete the object we created to avoide memory leak
+            delete(selectedPolicy);
+            selectedPolicy = nullptr;
 
-    
-}
-    configfile.close();
-}
+        }
+        else if(arguments[2] == "nve"){
+            selectedPolicy = new NaiveSelection();
+            addPlan(getSettlement(arguments[1]), selectedPolicy);
+            // we're not adding a pointer but the object itself so we delete the object we created to avoide memory leak
+            delete(selectedPolicy);
+            selectedPolicy = nullptr;
+    }
+            
+         }
+
+
 
 // starting the simulation
 void Simulation::start(){
     // first we check the simulation is not running
+    // stupid and maybe remove it
     if(this->isRunning){
-        std::cout << "the Simulation alreadt running you need to clsoe it brfore starting again";
+        std::cout << "the Simulation already running you need to clsoe it brfore starting again";
     }
     else{
-        this->isRunning = true;
-        while(isRunning){
+        std::cout << "the Simulation has started" << std::endl;
+        open();
+        string userCommand; 
+        while(this->isRunning){
+            std::getline(std::cin, userCommand);
+            vector<string> commandAsvector = Auxiliary::parseArguments(userCommand);
+            // close => finishing simulation
+            if(commandAsvector[0] == "close"){
+                std::cout << "closing simulation" << std::endl;
+                this->isRunning = false;
+                // close();
+            }
+            else{
+                validateCommnad(commandAsvector);
+            }
             
         }
     }
 }
+
+
 
 
 void Simulation::addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy){
@@ -115,8 +181,6 @@ void Simulation::addPlan(const Settlement &settlement, SelectionPolicy *selectio
 
 
 
-// unfinished
-// adding new Action to our action log, we need to make sure it's 
 void Simulation::addAction(BaseAction *action){
     this->actionsLog.push_back(action);
 }
@@ -134,7 +198,8 @@ bool Simulation::addSettlement(Settlement *settlement){
 
 bool Simulation::addFacility(FacilityType facility){
     // checking if facility name already existing
-    for(FacilityType currFacility : this->facilitiesOptions)
+    // added reference
+    for(auto &currFacility : this->facilitiesOptions)
     {
         if(facility.getName() == currFacility.getName()){
             // facility already existing
@@ -149,7 +214,7 @@ bool Simulation::addFacility(FacilityType facility){
 // we check if the settlement name is in our settlements vector
 // if it is the settlement exist else its not so we return false;
 bool Simulation::isSettlementExists(const string &settlementName){
-    for(Settlement *currSettlement : this->settlements)
+    for(auto &currSettlement : this->settlements)
     {
         if(settlementName == currSettlement->getName()){
             return true;
@@ -161,7 +226,7 @@ bool Simulation::isSettlementExists(const string &settlementName){
 
 Settlement &Simulation::getSettlement(const string &settlementName)
 {
-    for(Settlement *currSettlement : this->settlements)
+    for(auto &currSettlement : this->settlements)
     {
         if(settlementName == currSettlement->getName()){
             return *currSettlement;
@@ -172,16 +237,67 @@ Settlement &Simulation::getSettlement(const string &settlementName)
     return nullSttlement;
 }
 
+Plan &Simulation::getPlan(const int planID){
+    for (Plan &plan : plans) {
+        if (plan.getPlan_id() == planID) {  // Assuming Plan has a method getID() to get its ID
+            return plan;
+        }
+    }
+    // return
+}
 
 
+
+
+void Simulation::step(){
+    for(auto &pla : this->plans){
+        pla.step();
+    }
+}
+
+// open command - open the user-interface communiccation
+void Simulation::open(){
+    this->isRunning = true;
+}
+
+// delete before submiting
 void Simulation::to_string(){
-    for(Settlement *set : this->settlements){
+    for(auto set : this->settlements){
         std::cout << set->toString() << std::endl;
     }
-    for(FacilityType fac : this->facilitiesOptions){
+    for(auto fac : this->facilitiesOptions){
         std::cout << fac.toString() << std::endl;
     }
-    for(Plan pla : this->plans){
+    for(auto pla : this->plans){
         std::cout << pla.toString() << std::endl;
     }
 }
+
+
+void  Simulation::validateCommnad(vector<string> &commandAsVector){
+    // dealing with SimulateStep command:
+    if(commandAsVector[0] == "step"){
+        if(commandAsVector.size() == 2) {
+            
+                // we assume it's a positive number as instructed
+            int numOfSteps = std::stoi(commandAsVector[1] );
+           
+
+                executeStepCommand(numOfSteps);
+               
+
+            
+        }
+    }
+}
+
+void Simulation::executeStepCommand(int &numOfSteps){
+        BaseAction *stepAction = new SimulateStep(numOfSteps);
+        addAction(stepAction);
+        // executing the steps
+        stepAction->act(*this);
+        // As instructed we assume this action wont result in an error
+        
+
+}
+
