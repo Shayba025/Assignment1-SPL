@@ -1,4 +1,5 @@
 
+
 /*
 #include "Simulation.h"
 #include <iostream>
@@ -25,6 +26,7 @@ int main(int argc, char** argv){
 
 # include "Plan.h"
 #include "Facility.h"
+#include "Action.h"
 #include "Settlement.h"
 #include "SelectionPolicy.h"
 #include"Auxiliary.h"
@@ -37,10 +39,10 @@ int main(int argc, char** argv){
 int main(){
 
    Simulation *s1 = new Simulation("config_file.txt");
-   s1->to_string();
-    return 0;
-    
+    s1->to_string();
+    s1->start();
 
-    std::cout << (s1[0].getPlan()).toString() << std::endl;
+    s1->to_string();
+    return 0;
 
 }
