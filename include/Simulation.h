@@ -13,6 +13,16 @@ class SelectionPolicy;
 class Simulation {
     public:
         Simulation(const string &configFilePath); // e
+        /////////////////////////
+        //rule of 5:
+        ~Simulation();
+        // while contructing and extracting the data from the config file we need to deteminate if we're going to build a plan, settlemet or facility and act accordinly
+        // this function will check the "type" of the line object and create the right object in our code
+        void createObjectBasedType(vector<string> &arguments);
+        // the policy we choose is different based on the commnad line in the config file
+        // this function determinate whatt policy to choose for the plan we're building
+        void createPlanBasedPolicy(vector<string> &arguments);
+        /////////////////////////
         void start();
         void addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy); 
         void addAction(BaseAction *action);
@@ -20,13 +30,18 @@ class Simulation {
         bool addFacility(FacilityType facility); // yes
         bool isSettlementExists(const string &settlementName); // yes
         Settlement &getSettlement(const string &settlementName); // yes
-        Plan &getPlan(const int planID); // problem
+        Plan &getPlan(const int planID); // yes
         void step();
         void close();
-        void open();
+        void open(); //yes
 
         void to_string();
-
+        /////////////////
+        // special functions to interact with the actions:
+        // cehcking if the command meets the critiria, has the correct name and gives all the right arguments
+        void validateCommnad(vector<string> &commandAsvector);
+        void executeStepCommand(int &numOfSteps);
+        /////////////////
     private:
         bool isRunning;
         int planCounter; //For assigning unique plan IDs
