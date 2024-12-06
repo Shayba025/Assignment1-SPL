@@ -27,7 +27,7 @@ class BaseAction{
         string errorMsg;
         ActionStatus status;
 };
-
+// yes
 class SimulateStep : public BaseAction {
 
     public:
@@ -38,7 +38,7 @@ class SimulateStep : public BaseAction {
     private:
         const int numOfSteps;
 };
-
+// yes
 class AddPlan : public BaseAction {
     public:
         AddPlan(const string &settlementName, const string &selectionPolicy);
@@ -50,7 +50,7 @@ class AddPlan : public BaseAction {
         const string selectionPolicy;
 };
 
-
+// yes
 class AddSettlement : public BaseAction {
     public:
         AddSettlement(const string &settlementName,SettlementType settlementType);
@@ -80,6 +80,7 @@ class AddFacility : public BaseAction {
 
 };
 
+// yes
 class PrintPlanStatus: public BaseAction {
     public:
         PrintPlanStatus(int planId);
