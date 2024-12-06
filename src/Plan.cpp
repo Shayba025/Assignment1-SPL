@@ -46,11 +46,11 @@ Plan::Plan(const Plan& other)
         this->selectionPolicy = nullptr;
     }
     //deep copy for facilites
-    for (const Facility *facility : other.facilities) {
+    for(auto facility : other.facilities) {
         this->facilities.push_back(new Facility(*facility));
     }
     //deep copy for underConstruction
-    for (const Facility *facility : other.underConstruction) {
+    for(auto facility : other.underConstruction) {
         this->underConstruction.push_back(new Facility(*facility));
     }
   }
@@ -59,12 +59,14 @@ Plan::Plan(const Plan& other)
 // function for reseting/deleting the vectors facilities and underConstruction
 void Plan::facilitiesAndUnderConstructionClearer(){
     //delete all facility object we have from facilites
-    for (const Facility *facility : this->facilities) {
+    for(auto facility : this->facilities) {
         delete facility;
+        facility = nullptr;
     }
     //delete all facility object we have from underConstructions
-    for (const Facility *facility : this->underConstruction) {
+    for(auto facility : this->underConstruction) {
         delete facility;
+        facility = nullptr;
     }
     //empty the vectors facilites and UnderConstrauctions before inserting other objects
     this->facilities.clear();
@@ -115,6 +117,7 @@ Plan::~Plan(){
     // we dont delete the settlement object
     facilitiesAndUnderConstructionClearer();
     delete this->selectionPolicy;
+    this->selectionPolicy = nullptr;
 }
 
 
@@ -139,6 +142,7 @@ void Plan::setSelectionPolicy(SelectionPolicy *selectionPolicy){
     // deleting the previous policy to avoid memory leaks
     if (this->selectionPolicy != nullptr) {
         delete this->selectionPolicy; 
+        this->selectionPolicy = nullptr;
 }
     //deep copy for selection policy
     if(selectionPolicy != nullptr){
@@ -159,6 +163,7 @@ void Plan::step(){
     //step 2:
         //adding size_t instead of int
         size_t constructionLimit = this->settlement.getConstructionLimit();
+
         while(this->underConstruction.size() < constructionLimit){
             Facility *new_facility = new Facility(selectionPolicy->selectFacility(facilityOptions),settlement.getName());
             // consider adding case of what if facility is null ptr maybe printh somesheet
@@ -171,12 +176,12 @@ void Plan::step(){
     for (auto iter = this->underConstruction.begin(); iter != this->underConstruction.end(); ) {
         // iter is a pointer so we need to get the obj itself
         Facility *facility = *iter;
-        FacilityStatus currStatus = facility->step();
-       if(currStatus == FacilityStatus::OPERATIONAL){
+        facility->step();
+       if(facility->getStatus() == FacilityStatus::OPERATIONAL){
             // after the bilding i Operatiomnal we need to update the settlement scores
-            this->life_quality_score = facility->getLifeQualityScore();
-            this->economy_score = facility->getEconomyScore();
-            this->environment_score = facility->getEnvironmentScore();
+            this->life_quality_score += facility->getLifeQualityScore();
+            this->economy_score += facility->getEconomyScore();
+            this->environment_score += facility->getEnvironmentScore();
             //remove vevtor from Undercondtructor and add to finished facilities
             this->facilities.push_back(*this->underConstruction.erase(iter)); 
        }
@@ -205,7 +210,7 @@ const vector<Facility*> &Plan::getFacilities() const{
 
 // we dont  cahnge plan scores while under constructions
 void Plan::addFacility(Facility* facility){
-    this->underConstruction.push_back(new Facility(*facility));
+    this->underConstruction.push_back(facility);
 
     
 }
@@ -233,6 +238,8 @@ const int Plan::getPlan_id() const{
     return this->plan_id;
 }
 
+
+
 const string Plan::toString() const{
     // creating oss object
     string returnStr =  "plan id: " + std::to_string(this->plan_id) + " | "
@@ -249,17 +256,16 @@ const string Plan::toString() const{
         + "environment score: " + std::to_string(environment_score) + "\n"
         + "facilities: ";
         // iterating other the facilities
-        for (const Facility* facility : this->facilities){
+        for (auto facility : this->facilities){
             returnStr += "  | " + facility->toString() + "  | ";
         }
         returnStr += "under construction : ";
         // iterating other the under construction facilities
-         for (const Facility* facility : this->underConstruction){
+         for (auto facility : this->underConstruction){
             returnStr += "  | " + facility->toString() + "  | ";
         }
 
 
     return returnStr;
 }
-
 
