@@ -64,9 +64,12 @@ const FacilityType& BalancedSelection::selectFacility(const vector<FacilityType>
         }
         
     }
-    this->LifeQualityScore += best->getLifeQualityScore();
-    this->EnvironmentScore += best->getEnvironmentScore();
-    this->EconomyScore += best->getEconomyScore();
+    // we update the scores of balaced policy based on the item we
+    if(best!= nullptr){
+        this->LifeQualityScore += best->getLifeQualityScore();
+        this->EnvironmentScore += best->getEnvironmentScore();
+        this->EconomyScore += best->getEconomyScore();
+    }
     return *best;
 }
 
