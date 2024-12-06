@@ -1,5 +1,3 @@
-
-
 //#pragma once
 #include <vector>
 #include "Facility.h"
@@ -66,6 +64,9 @@ const FacilityType& BalancedSelection::selectFacility(const vector<FacilityType>
         }
         
     }
+    this->LifeQualityScore += best->getLifeQualityScore();
+    this->EnvironmentScore += best->getEnvironmentScore();
+    this->EconomyScore += best->getEconomyScore();
     return *best;
 }
 
