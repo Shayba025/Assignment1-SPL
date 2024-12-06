@@ -30,7 +30,10 @@ Simulation::Simulation(const string &configFilePath)
     configfile.close();
 }
 
-// dustructor
+
+//rule of 5 implamantation
+
+// distructor
 Simulation::~Simulation() {
     // delete all action logs
     for (auto action : actionsLog) {
@@ -51,6 +54,60 @@ Simulation::~Simulation() {
 
 
 
+//copy constraction need to finish
+Simulation::Simulation(const Simulation &other)
+:isRunning(other.isRunning), planCounter(other.planCounter), facilitiesOptions(other.facilitiesOptions) {
+    //actions deep copy
+    for(auto *actions : other.actionsLog){
+        actionsLog.push_back(actions->clone());
+    }
+
+    // settlements deep copy
+    for(auto *settlements : other.settlements ){
+        settlements.push_back(new Settlement(*settlements));
+    }
+
+    
+
+    
+}
+
+//move constractor
+Simulation::Simulation(Simulation &&other) noexcept
+:isRunning(other.isRunning),planCounter(other.planCounter),actionsLog(std::move(other.actionsLog)),
+plans(std::move(other.plans)),settlements(std::move(other.settlements)), facilitiesOptions(std::move(other.facilitiesOptions)){
+    other.planCounter = 0;
+    other.isRunning = false;
+}
+
+
+// move assignment operator
+Simulation& Simulation::operator=(Simulation &&other) noexcept{
+    
+    if(this != &other){ //checking if the current simulation is the same as being copied
+        //deletions
+        for(auto *settlement : settlements){
+            delete settlement;
+        }
+        for(auto *action : actionsLog){
+            delete action;
+        }
+        actionsLog.clear();
+        settlements.clear();
+        //coping the values
+        isRunning = other.isRunning;
+        planCounter = other.planCounter;
+        actionsLog = std::move(other.actionsLog);
+        plans = std::move(other.plans);
+        settlements = std::move(other.settlements);
+        facilitiesOptions = std::move(other.facilitiesOptions);
+
+
+        other.isRunning = false;
+        other.planCounter = 0;
+    }
+return *this;
+}
 
 
 
