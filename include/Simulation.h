@@ -17,8 +17,10 @@ class Simulation {
         //rule of 5:
         // Copy Constructor
        // Simulation::Simulation(const Simulation& other);
-        // Move Constructor
-       // Simulation::Simulation(Simulation&& other) noexcept
+       // Move constructor
+        Simulation(Simulation &&other) noexcept;
+        // Move assignment operator
+        Simulation &operator=(Simulation &&other) noexcept;
         // check if we need to add rule of 5 opertors
         ~Simulation();
         // while contructing and extracting the data from the config file we need to deteminate if we're going to build a plan, settlemet or facility and act accordinly
@@ -35,6 +37,10 @@ class Simulation {
         bool addFacility(FacilityType facility); // yes
         bool isSettlementExists(const string &settlementName); // yes
         Settlement &getSettlement(const string &settlementName); // yes
+
+        // making sure we have plan to return before calling the function
+        bool isPlanExisting(const int planID);
+
         Plan &getPlan(const int planID); // yes
         void step();
         void close();
@@ -46,6 +52,9 @@ class Simulation {
         // cehcking if the command meets the critiria, has the correct name and gives all the right arguments
         void validateCommnad(vector<string> &commandAsvector);
         void executeStepCommand(int &numOfSteps);
+        void executePlanCommand(const string &settlementName, const string &selectionPolicy);
+        void executeSettlementCommnad(const string &name, SettlementType type);
+        void executePrintPlanStatusCommnad(int plan_id);
         /////////////////
     private:
         bool isRunning;
