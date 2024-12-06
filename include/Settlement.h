@@ -1,33 +1,59 @@
 #pragma once
-#include <string>
 #include <vector>
-using std::string;
+#include "Facility.h"
 using std::vector;
 
-class Facility;
-
-enum class SettlementType {
-    VILLAGE,
-    CITY,
-    METROPOLIS,
+class SelectionPolicy {
+    public:
+        virtual const FacilityType& selectFacility(const vector<FacilityType>& facilitiesOptions) = 0;
+        virtual const string toString() const = 0;
+        virtual SelectionPolicy* clone() const = 0;
+        virtual ~SelectionPolicy() = default;
 };
 
-class Settlement {
+class NaiveSelection: public SelectionPolicy {
     public:
-        Settlement(const string &name, SettlementType type);
-        const string &getName() const;
-        SettlementType getType() const;
+        NaiveSelection();
+        const FacilityType& selectFacility(const vector<FacilityType>& facilitiesOptions) override;
+        const string toString() const override;
+        NaiveSelection *clone() const override;
+        ~NaiveSelection() override = default;
+    private:
+        int lastSelectedIndex;
+};
 
-        // instead of using the switch method for the enum in the to string method we create sub function
-        // that is doing it for us so the code will look cleaner.
-        const string typeToString() const;
+class BalancedSelection: public SelectionPolicy {
+    public:
+        BalancedSelection(int LifeQualityScore, int EconomyScore, int EnvironmentScore);
+        const FacilityType& selectFacility(const vector<FacilityType>& facilitiesOptions) override;
+        const string toString() const override;
+        BalancedSelection *clone() const override;
+        ~BalancedSelection() override = default;
+    private:
+        int LifeQualityScore;
+        int EconomyScore;
+        int EnvironmentScore;
+};
 
-        const string toString() const;
-        
-        // adding the getConstructionLimit for the step method
-        const int getConstructionLimit() const;
+class EconomySelection: public SelectionPolicy {
+    public:
+        EconomySelection();
+        const FacilityType& selectFacility(const vector<FacilityType>& facilitiesOptions) override;
+        const string toString() const override;
+        EconomySelection *clone() const override;
+        ~EconomySelection() override = default;
+    private:
+        int lastSelectedIndex;
 
-        private:
-            const string name;
-            SettlementType type;
+};
+
+class SustainabilitySelection: public SelectionPolicy {
+    public:
+        SustainabilitySelection();
+        const FacilityType& selectFacility(const vector<FacilityType>& facilitiesOptions) override;
+        const string toString() const override;
+        SustainabilitySelection *clone() const override;
+        ~SustainabilitySelection() override = default;
+    private:
+        int lastSelectedIndex;
 };
