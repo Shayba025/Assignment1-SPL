@@ -299,3 +299,26 @@ void ChangePlanPolicy::act(Simulation &simulation){
         error("");
     }
 }
+
+
+
+
+
+/*
+class PrintActionsLog : public BaseAction {
+    public:
+        PrintActionsLog();
+        void act(Simulation &simulation) override;
+        PrintActionsLog *clone() const override;
+        const string toString() const override;
+    private:
+};*/
+
+
+
+//Print Actions Log builder
+PrintActionsLog::PrintActionsLog(){} 
+
+void PrintActionsLog::act(Simulation &simulation){
+   simulation.print 
+}
