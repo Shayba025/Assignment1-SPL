@@ -270,4 +270,3 @@ const string Plan::toString() const{
     return returnStr;
 }
 
-
