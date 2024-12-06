@@ -55,18 +55,9 @@ void SimulateStep::act(Simulation &simulation){
 
 //to String method (SimulateStep:)
 const string SimulateStep::toString()const  {
-string statusStr = "";
-
-    if(this->getStatus() == ActionStatus::ERROR){  
-     statusStr = "Couldn't simulate step"; 
-     }            
-
-    else{
-        statusStr = "Simulate Step Status: COMPLETED"; 
-    }
-
+    string statusStr = "";    
+    statusStr = "Simulate Step Status: COMPLETED"; 
     string numOfStepsStr = std::to_string(numOfSteps);
-
     return "Status:" + statusStr + "Number Of Steps:" + numOfStepsStr;
 }
 
@@ -74,13 +65,13 @@ string statusStr = "";
 
 //clone method (SimulateStep)
 SimulateStep *SimulateStep::clone() const{
-    return new SimulateStep(*this);
+    return new SimulateStep(*this);    
 }
 
 
 //add plan builder
 AddPlan:: AddPlan (const string &settlementName, const string &selectionPolicy) 
-  :  BaseAtction() ,settlementName(settlementName), selectionPolicy(selectionPolicy){}
+  :  BaseAction() ,settlementName(settlementName), selectionPolicy(selectionPolicy){}
 
 //act method (AddPlan)
 void AddPlan::act(Simulation &simulation){
@@ -88,16 +79,16 @@ void AddPlan::act(Simulation &simulation){
     SelectionPolicy *myPolicy = nullptr;
 
     //checks the requiered policy 
-    if(selectionPolicy == "nve"){
+    if(this->selectionPolicy == "nve"){
         myPolicy =  new NaiveSelection();
     }
-    else if(selectionPolicy == "bal"){
+    else if(this->selectionPolicy == "bal"){
         myPolicy = new BalancedSelection(0,0,0); //defult values 
     }
-    else if(selectionPolicy == "eco"){
+    else if(this->selectionPolicy == "eco"){
         myPolicy = new EconomySelection();
     }
-    else if (selectionPolicy == "env"){
+    else if (this->selectionPolicy == "env"){
         myPolicy = new SustainabilitySelection();
     }
     //creates a new plan to the settlement and the chosen policy
@@ -125,4 +116,68 @@ void AddPlan::act(Simulation &simulation){
 AddPlan *AddPlan::clone() const {
     return new AddPlan(this->settlementName,this->selectionPolicy );
 }
+
+//AddSettlement constractor
+AddSettlement:: AddSettlement(const string &settlementName, const SettlementType settlementType)
+  : settlementName(settlementName),settlementType(settlementType){}
+
+//act (AddSettlement)
+void:: AddSettlement::act(Simulation &simulation){
+
+    if(simulation.isSettlementExists(settlementName)){
+    // add error
+    
+    }
+    else{
+        // add potential 
+        simulation.addSettlement(new Settlement(settlementName,settlementType));
+        complete();
+    }
+        
+}
+
+//clone method (AddSettlement)
+AddSettlement *AddSettlement::clone() const{
+    return new AddSettlement(this->settlementName, this->settlementType);
+}
+
+//to string method (AddSettlement)
+ const std::string AddSettlement::toString() const{
+    if(this->getStatus() == ActionStatus::ERROR){
+        return "Add Settlement:: ERROR";
+    }
+    else{
+        return "Settlemet Name Status: COMPLETED  Settlement Name:" + settlementName + "settlement Type:" ;
+ 
+    }
+ }
+
+
+
+
+//print plan constractor
+PrintPlanStatus::PrintPlanStatus(int planId)
+  : planId(planId){}
+
+//act method (print plan)
+void PrintPlanStatus::act(Simulation &simulation){
+    if(simulation.isPlanExisting(this->planId)){
+        Plan myPlan = simulation.getPlan(this->planId);
+        std::cout << "Plan Status:" + myPlan.toString() << std::endl;
+    }
+    else{
+        //add error
+    }
+    
+}
+//clone method (print plan)
+ PrintPlanStatus *PrintPlanStatus::clone() const{
+    return new PrintPlanStatus(*this);
+ }
+
+//to string method (print plan)
+ const string PrintPlanStatus::toString() const{//need to implement a method that returns if the plan exists
+    //finish
+ }
+
 
