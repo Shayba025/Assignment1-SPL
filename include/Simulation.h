@@ -1,37 +1,59 @@
 #pragma once
-#include <string>
 #include <vector>
 #include "Facility.h"
-#include "Plan.h"
-#include "Settlement.h"
-using std::string;
 using std::vector;
 
-class BaseAction;
-class SelectionPolicy;
-
-class Simulation {
+class SelectionPolicy {
     public:
-        Simulation(const string &configFilePath); // e
-        void start();
-        void addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy); 
-        void addAction(BaseAction *action);
-        bool addSettlement(Settlement *settlement); // yes
-        bool addFacility(FacilityType facility); // yes
-        bool isSettlementExists(const string &settlementName); // yes
-        Settlement &getSettlement(const string &settlementName); // yes
-        Plan &getPlan(const int planID); // problem
-        void step();
-        void close();
-        void open();
+        virtual const FacilityType& selectFacility(const vector<FacilityType>& facilitiesOptions) = 0;
+        virtual const string toString() const = 0;
+        virtual SelectionPolicy* clone() const = 0;
+        virtual ~SelectionPolicy() = default;
+};
 
-        void to_string();
-
+class NaiveSelection: public SelectionPolicy {
+    public:
+        NaiveSelection();
+        const FacilityType& selectFacility(const vector<FacilityType>& facilitiesOptions) override;
+        const string toString() const override;
+        NaiveSelection *clone() const override;
+        ~NaiveSelection() override = default;
     private:
-        bool isRunning;
-        int planCounter; //For assigning unique plan IDs
-        vector<BaseAction*> actionsLog;
-        vector<Plan> plans;
-        vector<Settlement*> settlements;
-        vector<FacilityType> facilitiesOptions;
+        int lastSelectedIndex;
+};
+
+class BalancedSelection: public SelectionPolicy {
+    public:
+        BalancedSelection(int LifeQualityScore, int EconomyScore, int EnvironmentScore);
+        const FacilityType& selectFacility(const vector<FacilityType>& facilitiesOptions) override;
+        const string toString() const override;
+        BalancedSelection *clone() const override;
+        ~BalancedSelection() override = default;
+    private:
+        int LifeQualityScore;
+        int EconomyScore;
+        int EnvironmentScore;
+};
+
+class EconomySelection: public SelectionPolicy {
+    public:
+        EconomySelection();
+        const FacilityType& selectFacility(const vector<FacilityType>& facilitiesOptions) override;
+        const string toString() const override;
+        EconomySelection *clone() const override;
+        ~EconomySelection() override = default;
+    private:
+        int lastSelectedIndex;
+
+};
+
+class SustainabilitySelection: public SelectionPolicy {
+    public:
+        SustainabilitySelection();
+        const FacilityType& selectFacility(const vector<FacilityType>& facilitiesOptions) override;
+        const string toString() const override;
+        SustainabilitySelection *clone() const override;
+        ~SustainabilitySelection() override = default;
+    private:
+        int lastSelectedIndex;
 };
