@@ -1,4 +1,5 @@
 
+
 /*
 #include "Simulation.h"
 #include <iostream>
@@ -25,6 +26,7 @@ int main(int argc, char** argv){
 
 # include "Plan.h"
 #include "Facility.h"
+#include "Action.h"
 #include "Settlement.h"
 #include "SelectionPolicy.h"
 #include"Auxiliary.h"
@@ -34,10 +36,10 @@ int main(int argc, char** argv){
 #include <Simulation.h>
 /*
    Simulation *s1 = new Simulation("config_file.txt");
-   s1->to_string();
-    return 0;
-    
+    s1->to_string();
+    s1->start();
 
+<<<<<<< HEAD
     std::cout << (s1[0].getPlan()).toString() << std::endl;
 */
 
@@ -66,6 +68,10 @@ BalancedSelection balanced(70, 50, 60);
 
       
 const FacilityType& chosen = balanced.selectFacility(facilities);
+=======
+    s1->to_string();
+    return 0;
+>>>>>>> e987c4f3253c6675d46c79d198737912f07e71fb
 
 std::cout << chosen.toString() << std::endl;
        
