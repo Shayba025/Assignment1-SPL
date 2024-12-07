@@ -243,27 +243,30 @@ const int Plan::getPlan_id() const{
 
 const string Plan::toString() const{
     // creating oss object
-    string returnStr =  "plan id: " + std::to_string(this->plan_id) + " | "
-        + " Settlement " + this->settlement.getName() + " | ";
-        // if is ullptr can't use the get name function run time compilation
-    if (selectionPolicy != nullptr) {
-            returnStr += "selection policy: " + selectionPolicy->toString() + " | "; 
-}   else {
-         returnStr += "selection policy: no policy given  | ";
+    string returnStr =  "plan id: " + std::to_string(this->plan_id) + " \n "
+        + " Settlement " + this->settlement.getName() + " \n ";
+        returnStr += " status : " + statusToString() + " \n ";
+
+        // if is nullptr can't use the g et name function run time compilation
+    if(selectionPolicy != nullptr) {
+            returnStr += "selection policy: " + selectionPolicy->toString() + " \n "; 
+     }   
+ else {
+         returnStr += "selection policy: no policy given  \n ";
     }
-        returnStr += " status : " + statusToString() + " | "
-        + "life quality score: " + std::to_string(life_quality_score) + " | "
-        + "economy score: " + std::to_string(economy_score) + " | "
+        
+        returnStr+= "life quality score: " + std::to_string(life_quality_score) + " \n "
+        + "economy score: " + std::to_string(economy_score) + " \n "
         + "environment score: " + std::to_string(environment_score) + "\n"
         + "facilities: ";
         // iterating other the facilities
         for (auto facility : this->facilities){
-            returnStr += "  | " + facility->toString() + "  | ";
+            returnStr += "  \n " + facility->toString() + "  \n ";
         }
         returnStr += "under construction : ";
         // iterating other the under construction facilities
          for (auto facility : this->underConstruction){
-            returnStr += "  | " + facility->toString() + "  | ";
+            returnStr += "  \n " + facility->toString() + "  \n ";
         }
 
 
