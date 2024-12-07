@@ -40,9 +40,9 @@ int main(int argc, char** argv){
 
 int main(){
 
-   Simulation *s1 = new Simulation("config_file.txt");
-    s1->start();
-    s1->to_string();
+   Simulation s1 = Simulation("config_file.txt");
+    s1.start();
+    s1.to_string();
     return 0;
 
 }
