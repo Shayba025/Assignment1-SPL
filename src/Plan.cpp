@@ -1,5 +1,4 @@
 
-
 # include "Plan.h"
 # include "Settlement.h"
 # include <string>
@@ -39,6 +38,10 @@ Plan::Plan(const Plan& other)
     
   {
     //deep copy for selection policy
+        if (this->selectionPolicy != nullptr) {  
+            delete this->selectionPolicy;  
+            this->selectionPolicy = nullptr;
+    }
     if(other.selectionPolicy != nullptr){
         this->selectionPolicy = other.selectionPolicy->clone();
     }
@@ -47,11 +50,11 @@ Plan::Plan(const Plan& other)
     }
     //deep copy for facilites
     for(auto facility : other.facilities) {
-        this->facilities.push_back(new Facility(*facility));
+        this->facilities.push_back(facility);
     }
     //deep copy for underConstruction
     for(auto facility : other.underConstruction) {
-        this->underConstruction.push_back(new Facility(*facility));
+        this->underConstruction.push_back(facility);
     }
   }
    
@@ -60,13 +63,17 @@ Plan::Plan(const Plan& other)
 void Plan::facilitiesAndUnderConstructionClearer(){
     //delete all facility object we have from facilites
     for(auto facility : this->facilities) {
-        delete facility;
-        facility = nullptr;
+        if(facility != nullptr){
+            delete facility;
+            facility = nullptr;
+        }
     }
     //delete all facility object we have from underConstructions
     for(auto facility : this->underConstruction) {
-        delete facility;
-        facility = nullptr;
+       if(facility != nullptr){
+            delete facility;
+            facility = nullptr;
+        }
     }
     //empty the vectors facilites and UnderConstrauctions before inserting other objects
     this->facilities.clear();
@@ -163,8 +170,7 @@ void Plan::step(){
     //step 2:
         //adding size_t instead of int
         size_t constructionLimit = this->settlement.getConstructionLimit();
-
-        while(this->underConstruction.size() < constructionLimit){
+        for(size_t i = this->underConstruction.size(); i<= constructionLimit; i++){
             Facility *new_facility = new Facility(selectionPolicy->selectFacility(facilityOptions),settlement.getName());
             // consider adding case of what if facility is null ptr maybe printh somesheet
             this->addFacility(new_facility) ; // Add to underConstruction
@@ -184,7 +190,8 @@ void Plan::step(){
             this->economy_score += facility->getEconomyScore();
             this->environment_score += facility->getEnvironmentScore();
             //remove vevtor from Undercondtructor and add to finished facilities
-            this->facilities.push_back(*this->underConstruction.erase(iter)); 
+            iter = this->underConstruction.erase(iter);
+            this->facilities.push_back(facility); 
        }
        else{
         iter = iter+1;
@@ -240,7 +247,6 @@ const int Plan::getPlan_id() const{
 }
 
 
-
 const string Plan::toString() const{
     // creating oss object
     string returnStr =  "plan id: " + std::to_string(this->plan_id) + " \n "
@@ -272,4 +278,3 @@ const string Plan::toString() const{
 
     return returnStr;
 }
-
