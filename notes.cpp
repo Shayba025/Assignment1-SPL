@@ -9,4 +9,12 @@
 4. finish ChangePlanPolicy
 
 5. check copy constractor of simulation with plan
+
+6. selection policy row 1, decide if pragma once is needed because its in a comment
+
+7. finish rule of 5 in siulation
+
+
+
+
 */
