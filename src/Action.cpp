@@ -75,26 +75,38 @@ AddPlan:: AddPlan (const string &settlementName, const string &selectionPolicy)
 
 //act method (AddPlan)
 void AddPlan::act(Simulation &simulation){
-    Settlement &settlement = simulation.getSettlement(settlementName);
-    SelectionPolicy *myPolicy = nullptr;
+     // checking for errors
+    vector<string> policyCodeNames = {"nve", "bal", "eco", "env"};
+    bool policyExists = false;
+    for(auto str : policyCodeNames){
+        if(this->selectionPolicy == str){
+            policyExists = true;
+        }
+    }
+    // error occurd
+    if(!simulation.isSettlementExists(this->settlementName) || !policyExists){
+        error("Cannot create this plan");
+    }
+    else{
+        SelectionPolicy *myPolicy;
+        //checks the requiered policy 
+        if(this->selectionPolicy == "nve"){
+            myPolicy =  new NaiveSelection();
+        }
+        else if(this->selectionPolicy == "bal"){
+            myPolicy = new BalancedSelection(0,0,0); //defult values 
+        }
+        else if(this->selectionPolicy == "eco"){
+            myPolicy = new EconomySelection();
+        }
+        else if (this->selectionPolicy == "env"){
+            myPolicy = new SustainabilitySelection();
+        }
+        //creates a new plan to the settlement and the chosen policy
+        simulation.addPlan(simulation.getSettlement(this->settlementName), myPolicy);
 
-    //checks the requiered policy 
-    if(this->selectionPolicy == "nve"){
-        myPolicy =  new NaiveSelection();
-    }
-    else if(this->selectionPolicy == "bal"){
-        myPolicy = new BalancedSelection(0,0,0); //defult values 
-    }
-    else if(this->selectionPolicy == "eco"){
-        myPolicy = new EconomySelection();
-    }
-    else if (this->selectionPolicy == "env"){
-        myPolicy = new SustainabilitySelection();
-    }
-    //creates a new plan to the settlement and the chosen policy
-    simulation.addPlan(settlement, myPolicy);
-
-    complete(); //updates the status as completed
+        complete(); //updates the status as completed
+        }
 }
 
 
@@ -125,8 +137,7 @@ AddSettlement:: AddSettlement(const string &settlementName, const SettlementType
 void:: AddSettlement::act(Simulation &simulation){
 
     if(simulation.isSettlementExists(settlementName)){
-    // add error
-    
+        error("Settlement already exists");
     }
     else{
         // add potential 
@@ -153,6 +164,49 @@ AddSettlement *AddSettlement::clone() const{
  }
 
 
+// AddFacility constractor
+AddFacility::AddFacility(const string &facilityName, const FacilityCategory facilityCategory, const int price, const int lifeQualityScore, const int economyScore, const int environmentScore)
+  : facilityName(facilityName),
+    facilityCategory(facilityCategory),
+    price(price),
+    lifeQualityScore(lifeQualityScore),
+    economyScore(economyScore),
+    environmentScore(environmentScore){}
+
+
+
+//act method (AddFacility)
+void::AddFacility::act(Simulation &simulation){
+    FacilityType facility (facilityName, facilityCategory, price, lifeQualityScore, economyScore, environmentScore);
+
+        if()
+        }
+        else{
+            (simulation.addFacility(facility)){
+            complete();
+        }
+}//////////////////////////////////////////////////// complete act with the is facility exists method
+
+
+
+//clone method (AddFacility)
+AddFacility *AddFacility::clone() const{
+    return new AddFacility(*this);
+}
+
+
+//to string method (AddFacility)
+const string AddFacility::toString() const{
+    if(this->getStatus() == ActionStatus::ERROR){
+        return "Add Facility Status: ERROR";
+    }
+    else{
+   return  "Add Facility Status: COMPLETED Facility Name:" + facilityName + "Facility Category:" + categoryAsString(facilityCategory) 
+             + "price:" + std::to_string(price) + "Life Quality Score:" + std::to_string(lifeQualityScore) + 
+            "Economy Score:" + std::to_string(economyScore) + "Enviroment Score:" + std::to_string(environmentScore); 
+            }
+}
+
 
 
 //print plan constractor
@@ -166,7 +220,7 @@ void PrintPlanStatus::act(Simulation &simulation){
         std::cout << "Plan Status:" + myPlan.toString() << std::endl;
     }
     else{
-        //add error
+        error("Plan doesn’t exist");
     }
     
 }
@@ -178,6 +232,7 @@ void PrintPlanStatus::act(Simulation &simulation){
 //to string method (print plan)
  const string PrintPlanStatus::toString() const{//need to implement a method that returns if the plan exists
     //finish
+    return "";
  }
 
 
