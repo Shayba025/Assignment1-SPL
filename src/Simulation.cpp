@@ -102,7 +102,6 @@ void Simulation::createObjectBasedType(vector<string> &arguments){
 // helper function for createObjectBasedType
 // creating the right policy for the plan
 void Simulation::createPlanBasedPolicy(vector<string> &arguments){
-      SelectionPolicy *selectedPolicy;
       if(arguments[2] == "eco"){  
 
         addPlan(getSettlement(arguments[1]), new EconomySelection());
@@ -241,11 +240,11 @@ Plan &Simulation::getPlan(const int planID){
             return plan;
         }
     }
-    // return
+    return plans[0]; // add
 }
 
 bool Simulation::isPlanExisting(const int planID){
-    if(planID < 0 || static_cast<size_t>(planID > plans.size())){
+    if(planID < 0 || static_cast<size_t>(planID) > plans.size()){
         return false;
     }
      for (Plan &plan : plans) {
