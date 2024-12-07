@@ -34,15 +34,18 @@ Simulation::Simulation(const string &configFilePath)
 Simulation::~Simulation() {
     // delete all action logs
     for (auto action : actionsLog) {
-        delete action; 
-        action = nullptr;
+        if(action != nullptr){
+            delete action; 
+            action = nullptr;
+        }
     }
     // delete all settlement
     for (auto settlement : settlements) {
-        delete settlement; 
+        if(settlement !=nullptr){
+            delete settlement; 
         settlement = nullptr;
+        }
     }
-    this->actionsLog.clear();
     this->settlements.clear();
     this->plans.clear();
     this->facilitiesOptions.clear();
@@ -50,42 +53,9 @@ Simulation::~Simulation() {
 }
 
 
-//move constractor
-Simulation::Simulation(Simulation &&other) noexcept
-:isRunning(other.isRunning),planCounter(other.planCounter),actionsLog(std::move(other.actionsLog)),
-plans(std::move(other.plans)),settlements(std::move(other.settlements)), facilitiesOptions(std::move(other.facilitiesOptions)){
-    other.planCounter = 0;
-    other.isRunning = false;
-}
 
 
-// move assignment operator
-Simulation& Simulation::operator=(Simulation &&other) noexcept{
-    
-    if(this != &other){ //checking if the current simulation is the same as being copied
-        //deletions
-        for(auto *settlement : settlements){
-            delete settlement;
-        }
-        for(auto *action : actionsLog){
-            delete action;
-        }
-        actionsLog.clear();
-        settlements.clear();
-        //coping the values
-        isRunning = other.isRunning;
-        planCounter = other.planCounter;
-        actionsLog = std::move(other.actionsLog);
-        plans = std::move(other.plans);
-        settlements = std::move(other.settlements);
-        facilitiesOptions = std::move(other.facilitiesOptions);
 
-
-        other.isRunning = false;
-        other.planCounter = 0;
-    }
-return *this;
-}
 
 
 
@@ -100,19 +70,18 @@ void Simulation::createObjectBasedType(vector<string> &arguments){
             SettlementType typeAsInt = static_cast<SettlementType>(std::stoi(arguments[2]));
 
             // in the method of simmulation we create the object on the heap and only reatrun to the vctor it's pointer
-            Settlement *newSettlement = new Settlement(arguments[1],typeAsInt);
-            addSettlement(newSettlement);
+            
+            addSettlement(new Settlement(arguments[1],typeAsInt));
         }
         
         //creating facility
         else if(arguments[0] == "facility"){
             // we create a new facilityOption
             // we declate new facility while converting the text variables to the type the constructor ueses
-            FacilityType *newFacility = new FacilityType(arguments[1], static_cast<FacilityCategory>(std::stoi(arguments[2])) ,std::stoi(arguments[3]),std::stoi(arguments[4]),std::stoi(arguments[5]),std::stoi(arguments[6]));
-            addFacility(*newFacility);
+            FacilityType newFacility = FacilityType(arguments[1], static_cast<FacilityCategory>(std::stoi(arguments[2])) ,std::stoi(arguments[3]),std::stoi(arguments[4]),std::stoi(arguments[5]),std::stoi(arguments[6]));
+            addFacility(newFacility);
             // we're not adding a pointer but the object itself so we delete the object we created to avoide memory leak
-            delete(newFacility);
-            newFacility = nullptr;
+           
 
         }
         // creating Plan
@@ -135,36 +104,29 @@ void Simulation::createObjectBasedType(vector<string> &arguments){
 void Simulation::createPlanBasedPolicy(vector<string> &arguments){
       SelectionPolicy *selectedPolicy;
       if(arguments[2] == "eco"){  
-        selectedPolicy = new EconomySelection();
-        addPlan(getSettlement(arguments[1]), selectedPolicy);
+
+        addPlan(getSettlement(arguments[1]), new EconomySelection());
         // we're not adding a pointer but the object itself so we delete the object we created to avoide memory leak
-        delete(selectedPolicy);
-        selectedPolicy = nullptr;
+       
 
         }
         else if(arguments[2] == "bal"){
             // since we creating new plan it's scores are by default 0 (we ahven't build anything)
-            selectedPolicy = new BalancedSelection(0,0,0);
-            addPlan(getSettlement(arguments[1]), selectedPolicy);
+            addPlan(getSettlement(arguments[1]), new BalancedSelection(0,0,0));
             // we're not adding a pointer but the object itself so we delete the object we created to avoide memory leak
-            delete(selectedPolicy);
-            selectedPolicy = nullptr;
+            
             
         }
         else if(arguments[2] == "env"){
-            selectedPolicy = new SustainabilitySelection();
-            addPlan(getSettlement(arguments[1]), selectedPolicy);
+            addPlan(getSettlement(arguments[1]), new SustainabilitySelection());
             // we're not adding a pointer but the object itself so we delete the object we created to avoide memory leak
-            delete(selectedPolicy);
-            selectedPolicy = nullptr;
+           
 
         }
         else if(arguments[2] == "nve"){
-            selectedPolicy = new NaiveSelection();
-            addPlan(getSettlement(arguments[1]), selectedPolicy);
+            addPlan(getSettlement(arguments[1]), new NaiveSelection());
             // we're not adding a pointer but the object itself so we delete the object we created to avoide memory leak
-            delete(selectedPolicy);
-            selectedPolicy = nullptr;
+            
     }
             
          }
@@ -206,8 +168,8 @@ void Simulation::addPlan(const Settlement &settlement, SelectionPolicy *selectio
     // we assume the action that called this function is the last one sice after every call for action we call it's 
     // simulation function so by default our action is the last action 
     // create and insert
-    Plan *addedPlan = new Plan(this->planCounter, settlement, selectionPolicy, this->facilitiesOptions);
-    this->plans.push_back(*addedPlan);
+    Plan addedPlan = Plan(this->planCounter, settlement, selectionPolicy, this->facilitiesOptions);
+    this->plans.push_back(addedPlan);
     // making changes after init
     this->planCounter = this->planCounter + 1;
     
@@ -235,7 +197,7 @@ bool Simulation::addSettlement(Settlement *settlement){
 bool Simulation::addFacility(FacilityType facility){
     // checking if facility name already existing
     // added reference
-    for(auto &currFacility : this->facilitiesOptions)
+    for(auto currFacility : this->facilitiesOptions)
     {
         if(facility.getName() == currFacility.getName()){
             // facility already existing
@@ -317,6 +279,17 @@ void Simulation::to_string(){
     for(auto pla : this->plans){
         std::cout << pla.toString() << std::endl;
     }
+    std::cout << "action logs" << std::endl;
+    std::cout << "////////////////////////////////////////////////////////" << std::endl;
+   std::cout << "////////////////////////////////////////////////////////" << std::endl;
+   std::cout << "////////////////////////////////////////////////////////" << std::endl;
+   std::cout << "////////////////////////////////////////////////////////" << std::endl;
+   std::cout << "////////////////////////////////////////////////////////" << std::endl;
+   std::cout << "////////////////////////////////////////////////////////" << std::endl;
+    for(auto action : this->actionsLog){
+        
+        std::cout << action->toString() << std::endl;
+    }
 }
 
 
@@ -389,53 +362,63 @@ void  Simulation::validateCommnad(vector<string> &commandAsVector){
 }
 
 void Simulation::executeStepCommand(int &numOfSteps){
-        BaseAction *stepAction = new SimulateStep(numOfSteps);
-        addAction(stepAction);
+        SimulateStep stepAction = SimulateStep(numOfSteps);
         // executing the steps
-        stepAction->act(*this);
+        stepAction.act(*this);
+        BaseAction *actionClone = stepAction.clone();
+        addAction(actionClone);
         // As instructed we assume this action wont result in an error
         
 
 }
 
 void Simulation::executePlanCommand(const string &settlementName, const string &selectionPolicy){
-    BaseAction *planAction = new AddPlan(settlementName, selectionPolicy);
-    planAction->act(*this);
-    addAction(planAction);
+    AddPlan planAction = AddPlan(settlementName, selectionPolicy);
+    planAction.act(*this);
+    BaseAction *actionClone = planAction.clone();
+    addAction(actionClone);
 
 }
 
 
 void Simulation::executeSettlementCommnad(const string &name, SettlementType type){
-    BaseAction *settlementAction = new AddSettlement(name, type);
-    settlementAction->act(*this);
-    addAction(settlementAction);
+    AddSettlement settlementAction = AddSettlement(name, type);
+    settlementAction.act(*this);
+    BaseAction *actionClone = settlementAction.clone();
+    addAction(actionClone);
 }
 
 
 void Simulation::executeFacilityCommnad(const string &facilityName, const FacilityCategory facilityCategory, const int price, const int lifeQualityScore, const int economyScore, const int environmentScore){
-    BaseAction *facilityAction = new AddFacility(facilityName, facilityCategory, price, lifeQualityScore, economyScore, environmentScore);
-    facilityAction->act(*this);
-    addAction(facilityAction);
+    AddFacility facilityAction = AddFacility(facilityName, facilityCategory, price, lifeQualityScore, economyScore, environmentScore);
+    facilityAction.act(*this);
+    BaseAction *actionClone = facilityAction.clone();
+    addAction(actionClone);
 }
 
 void Simulation::executePrintPlanStatusCommnad(int plan_id){
-    BaseAction *printPlanAction = new PrintPlanStatus(plan_id);
-    addAction(printPlanAction);
-    printPlanAction->act(*this);
+    PrintPlanStatus printPlanAction =  PrintPlanStatus(plan_id);
+    printPlanAction.act(*this);
+    BaseAction *actionClone = printPlanAction.clone();
+    addAction(actionClone);
+
 }
 
 // change policy
 
 
 void Simulation::executeLogCommnad(){
-    BaseAction *logAction = new PrintActionsLog();
-    addAction(logAction);
-    logAction->act(*this);
+    PrintActionsLog logAction =  PrintActionsLog();
+    logAction.act(*this);
+    BaseAction *actionClone = logAction.clone();
+    addAction(actionClone);
 }
 
 void Simulation::printingLog(){
     for(auto alog : this->actionsLog){
-        std::cout << alog->toString() << std::endl;
+        if(alog){
+            std::cout << alog->toString() << std::endl;
+        }
+        
     }
 }
