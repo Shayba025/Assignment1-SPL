@@ -238,3 +238,21 @@ void PrintPlanStatus::act(Simulation &simulation){
  }
 
 
+/*
+class ChangePlanPolicy : public BaseAction {
+    public:
+        ChangePlanPolicy(const int planId, const string &newPolicy);
+        void act(Simulation &simulation) override;
+        ChangePlanPolicy *clone() const override;
+        const string toString() const override;
+    private:
+        const int planId;
+        const string newPolicy;
+};*/
+
+ChangePlanPolicy::ChangePlanPolicy(const int planId, const string &newPolicy)
+:planId(planId),newPolicy(newPolicy){}
+
+void ChangePlanPolicy::act(Simulation &simulation){
+    if()
+}
