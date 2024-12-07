@@ -177,7 +177,7 @@ AddFacility::AddFacility(const string &facilityName, const FacilityCategory faci
 
 //act method (AddFacility)
 void::AddFacility::act(Simulation &simulation){
-FacilityType *facility = new FacilityType(facilityName, facilityCategory, price, lifeQualityScore, economyScore, environmentScore);
+    FacilityType *facility = new FacilityType(facilityName, facilityCategory, price, lifeQualityScore, economyScore, environmentScore);
     
         if(simulation.addFacility(*facility)){
             complete();
@@ -186,6 +186,9 @@ FacilityType *facility = new FacilityType(facilityName, facilityCategory, price,
             error("Facilty already exists");
         }
     }
+       
+            
+
 
 
 //clone method (AddFacility)
@@ -200,7 +203,7 @@ const string AddFacility::toString() const{
         return "Add Facility Status: ERROR";
     }
     else{
-   return  "Add Facility Status: COMPLETED Facility Name:" + facilityName + "Facility Category:" + categoryAsString(facilityCategory) 
+   return  "Add Facility Status: COMPLETED Facility Name:" + facilityName + "Facility Category:" 
              + "price:" + std::to_string(price) + "Life Quality Score:" + std::to_string(lifeQualityScore) + 
             "Economy Score:" + std::to_string(economyScore) + "Enviroment Score:" + std::to_string(environmentScore); 
             }
