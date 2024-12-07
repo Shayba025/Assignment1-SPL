@@ -55,6 +55,9 @@ class Simulation {
         void executePlanCommand(const string &settlementName, const string &selectionPolicy);
         void executeSettlementCommnad(const string &name, SettlementType type);
         void executePrintPlanStatusCommnad(int plan_id);
+        void executeFacilityCommnad(const string &facilityName, const FacilityCategory facilityCategory, const int price, const int lifeQualityScore, const int economyScore, const int environmentScore);
+        void executeLogCommnad();
+        void printingLog();
         /////////////////
     private:
         bool isRunning;
