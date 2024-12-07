@@ -154,14 +154,16 @@ AddSettlement *AddSettlement::clone() const{
 
 //to string method (AddSettlement)
  const std::string AddSettlement::toString() const{
+    string statusString;
     if(this->getStatus() == ActionStatus::ERROR){
-        return "Add Settlement:: ERROR";
+        statusString = "ERROR";
     }
     else{
-        return "Settlemet Name Status: COMPLETED  Settlement Name:" + settlementName + "settlement Type:" ;
- 
+        statusString = "COMPLETED";
     }
- }
+    return "settlement " + this->settlementName + "yes"; // add settlement type;
+    }
+ 
 
 
 // AddFacility constractor
@@ -199,14 +201,34 @@ AddFacility *AddFacility::clone() const{
 
 //to string method (AddFacility)
 const string AddFacility::toString() const{
+    string statusString;
     if(this->getStatus() == ActionStatus::ERROR){
-        return "Add Facility Status: ERROR";
+        statusString = "ERROR";
     }
     else{
-   return  "Add Facility Status: COMPLETED Facility Name:" + facilityName + "Facility Category:" 
-             + "price:" + std::to_string(price) + "Life Quality Score:" + std::to_string(lifeQualityScore) + 
-            "Economy Score:" + std::to_string(economyScore) + "Enviroment Score:" + std::to_string(environmentScore); 
-            }
+        statusString = "COMPLETED";
+    }
+
+    string currCategory = "";
+            switch (this->facilityCategory)
+            {
+            case FacilityCategory::LIFE_QUALITY:
+                currCategory = "LIFE_QUALITY";
+                break;
+            
+            case FacilityCategory::ECONOMY:
+                currCategory = "ECONOMY";
+                break;
+            case FacilityCategory::ENVIRONMENT:
+                currCategory = "ENVIRONMENT";
+                break;
+            default:
+            currCategory = "Unknown";
+            break;
+        }
+
+   return  "Facility" + this->facilityName + " " + currCategory + " " + std::to_string(this->price) + " " + std::to_string(this->lifeQualityScore) + " " + std::to_string(this->economyScore)+ " " + std::to_string(this->environmentScore) + " " + statusString;
+            
 }
 
 
@@ -220,6 +242,7 @@ void PrintPlanStatus::act(Simulation &simulation){
     if(simulation.isPlanExisting(this->planId)){
         Plan myPlan = simulation.getPlan(this->planId);
         std::cout << "Plan Status:" + myPlan.toString() << std::endl;
+        complete();
     }
     else{
         error("Plan doesn’t exist");
@@ -234,25 +257,32 @@ void PrintPlanStatus::act(Simulation &simulation){
 //to string method (print plan)
  const string PrintPlanStatus::toString() const{//need to implement a method that returns if the plan exists
     //finish
-    return "";
+    string statusString;
+    if(this->getStatus() == ActionStatus::ERROR){
+        statusString = "ERROR";
+    }
+    else{
+        statusString = "COMPLETED";
+    }
+    return "Print Plan Status" + std::to_string(this->planId) + " " + statusString;
  }
 
-
-/*
-class ChangePlanPolicy : public BaseAction {
-    public:
-        ChangePlanPolicy(const int planId, const string &newPolicy);
-        void act(Simulation &simulation) override;
-        ChangePlanPolicy *clone() const override;
-        const string toString() const override;
-    private:
-        const int planId;
-        const string newPolicy;
-};*/
-
-ChangePlanPolicy::ChangePlanPolicy(const int planId, const string &newPolicy)
-:planId(planId),newPolicy(newPolicy){}
-
-void ChangePlanPolicy::act(Simulation &simulation){
-    if()
+// print action logs
+// constructor
+PrintActionsLog::PrintActionsLog(){
+    
 }
+// act
+void PrintActionsLog::act(Simulation &simulation){
+    simulation.printingLog();
+    complete();
+}
+
+PrintActionsLog *PrintActionsLog::clone() const{
+    return new PrintActionsLog(*this);
+}
+
+const string PrintActionsLog::toString() const{
+    return "";
+}
+
