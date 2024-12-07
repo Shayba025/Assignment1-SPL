@@ -15,9 +15,7 @@ using std::vector;
 NaiveSelection::NaiveSelection() : lastSelectedIndex(-1) {}
 
 const FacilityType& NaiveSelection::selectFacility(const std::vector<FacilityType>& facilitiesOptions) {
-    if (facilitiesOptions.empty()) {
-        throw std::invalid_argument("No facilities available for selection."); // making sure we didn't get an empty list 
-    }
+    
 
     lastSelectedIndex = (lastSelectedIndex + 1) % facilitiesOptions.size(); //moving on to the next facillity 
     return facilitiesOptions[lastSelectedIndex]; // returning the facillity according to it's index
@@ -25,7 +23,7 @@ const FacilityType& NaiveSelection::selectFacility(const std::vector<FacilityTyp
 
 //to string method
 const string NaiveSelection::toString() const{
-    return "Naive Selection";
+    return "nve";
 }
 
 //clone method
@@ -75,7 +73,7 @@ const FacilityType& BalancedSelection::selectFacility(const vector<FacilityType>
 
 //to string method
 const string BalancedSelection::toString() const{
-    return "Balanced Selection";
+    return "bal";
 }
 
 
@@ -118,7 +116,7 @@ const FacilityType& EconomySelection::selectFacility(const vector<FacilityType>&
 
 //to string method
 const string EconomySelection::toString() const{
-    return "Economy Selection";
+    return "eco";
 }
 
 
@@ -164,7 +162,7 @@ const FacilityType& SustainabilitySelection::selectFacility(const vector<Facilit
 
 //to string method
 const string SustainabilitySelection::toString() const{
-    return "Sustainability Selection";
+    return "snv";
 }
 
 
