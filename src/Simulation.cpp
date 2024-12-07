@@ -334,15 +334,11 @@ void  Simulation::validateCommnad(vector<string> &commandAsVector){
     else if(commandAsVector[0] == "plan"){
         // valid input plan <settlement_name> <selection_policy>
         if(commandAsVector.size() == 3) {
-            if(isSettlementExists(commandAsVector[1])){
                 executePlanCommand(commandAsVector[1], commandAsVector[2]);
-            }
-            else{
-                // add error settlement doesnt exist
-            }
+            
         }
         else{
-            // error invalide input
+            std::cout << "invalid input" << std::endl;
         }
         
     }
@@ -350,21 +346,32 @@ void  Simulation::validateCommnad(vector<string> &commandAsVector){
     else if(commandAsVector[0] == "settlement"){
         // valid input settlement <settlement_name> <settlement_type>
         if(commandAsVector.size() == 3) {
-            executeSettlementCommnad(commandAsVector[0], static_cast<SettlementType>(std::stoi(commandAsVector[2])));
+            executeSettlementCommnad(commandAsVector[1], static_cast<SettlementType>(std::stoi(commandAsVector[2])));
+    }
+         else{
+            std::cout << "invalid input" << std::endl;
+        }
     }
 
+    else if(commandAsVector[0] == "facility"){
+            // valid input settlement <settlement_name> <settlement_type>
+            if(commandAsVector.size() == 7) {
+                executeFacilityCommnad(commandAsVector[1], static_cast<FacilityCategory>(std::stoi(commandAsVector[2])),std::stoi(commandAsVector[3]),std::stoi(commandAsVector[4]),std::stoi(commandAsVector[5]),std::stoi(commandAsVector[6]));
+        }
+            else{
+                std::cout << "invalid input" << std::endl;
+            }
+        }
 
-    
-    }
-        else if(commandAsVector[0] == "planStatus"){
-        // valid input settlement <settlement_name> <settlement_type>
+    else if(commandAsVector[0] == "planStatus"){
+    // valid input settlement <settlement_name> <settlement_type>
         if(commandAsVector.size() == 2) {
             executePrintPlanStatusCommnad(std::stoi(commandAsVector[1]));
         }
-    else{
-        // error invalid input
-    }
-    }
+        else{
+                std::cout << "invalid input" << std::endl;
+            }
+}
 }
 
 void Simulation::executeStepCommand(int &numOfSteps){
@@ -379,15 +386,23 @@ void Simulation::executeStepCommand(int &numOfSteps){
 
 void Simulation::executePlanCommand(const string &settlementName, const string &selectionPolicy){
     BaseAction *planAction = new AddPlan(settlementName, selectionPolicy);
-    addAction(planAction);
     planAction->act(*this);
+    addAction(planAction);
+
 }
 
 
 void Simulation::executeSettlementCommnad(const string &name, SettlementType type){
     BaseAction *settlementAction = new AddSettlement(name, type);
-    addAction(settlementAction);
     settlementAction->act(*this);
+    addAction(settlementAction);
+}
+
+
+void Simulation::executeFacilityCommnad(const string &facilityName, const FacilityCategory facilityCategory, const int price, const int lifeQualityScore, const int economyScore, const int environmentScore){
+    BaseAction *facilityAction = new AddFacility(facilityName, facilityCategory, price, lifeQualityScore, economyScore, environmentScore);
+    facilityAction->act(*this);
+    addAction(facilityAction);
 }
 
 void Simulation::executePrintPlanStatusCommnad(int plan_id){
