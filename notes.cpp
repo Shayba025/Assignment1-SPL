@@ -12,7 +12,7 @@
 
 6. selection policy row 1, decide if pragma once is needed because its in a comment
 
-7. finish rule of 5 in siulation
+7. finish rule of 5 in simulation
 
 
 
