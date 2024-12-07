@@ -18,10 +18,7 @@ class Simulation {
         // Copy Constructor
        // Simulation::Simulation(const Simulation& other);
        // Move constructor
-        Simulation(Simulation &&other) noexcept;
-        // Move assignment operator
-        Simulation &operator=(Simulation &&other) noexcept;
-        // check if we need to add rule of 5 opertors
+        
         ~Simulation();
         // while contructing and extracting the data from the config file we need to deteminate if we're going to build a plan, settlemet or facility and act accordinly
         // this function will check the "type" of the line object and create the right object in our code
