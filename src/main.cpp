@@ -1,6 +1,7 @@
 
 
 
+
 /*
 #include "Simulation.h"
 #include <iostream>
@@ -41,7 +42,6 @@ int main(){
 
    Simulation *s1 = new Simulation("config_file.txt");
     s1->start();
-
     s1->to_string();
     return 0;
 
