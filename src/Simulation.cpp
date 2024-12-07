@@ -372,6 +372,20 @@ void  Simulation::validateCommnad(vector<string> &commandAsVector){
                 std::cout << "invalid input" << std::endl;
             }
 }
+
+
+    //change plan policy
+
+    else if(commandAsVector[0] == "log"){
+            // valid input settlement <settlement_name> <settlement_type>
+            if(commandAsVector.size() == 1) {
+                executeLogCommnad();
+        }
+            else{
+                std::cout << "invalid input" << std::endl;
+            }
+        }
+
 }
 
 void Simulation::executeStepCommand(int &numOfSteps){
@@ -409,4 +423,19 @@ void Simulation::executePrintPlanStatusCommnad(int plan_id){
     BaseAction *printPlanAction = new PrintPlanStatus(plan_id);
     addAction(printPlanAction);
     printPlanAction->act(*this);
+}
+
+// change policy
+
+
+void Simulation::executeLogCommnad(){
+    BaseAction *logAction = new PrintActionsLog();
+    addAction(logAction);
+    logAction->act(*this);
+}
+
+void Simulation::printingLog(){
+    for(auto alog : this->actionsLog){
+        std::cout << alog->toString() << std::endl;
+    }
 }
