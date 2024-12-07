@@ -14,7 +14,4 @@
 
 7. finish rule of 5 in simulation
 
-
-
-
 */
