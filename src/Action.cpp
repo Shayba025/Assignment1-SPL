@@ -55,10 +55,9 @@ void SimulateStep::act(Simulation &simulation){
 
 //to String method (SimulateStep:)
 const string SimulateStep::toString()const  {
-    string statusStr = "";    
-    statusStr = "Simulate Step Status: COMPLETED"; 
-    string numOfStepsStr = std::to_string(numOfSteps);
-    return "Status:" + statusStr + "Number Of Steps:" + numOfStepsStr;
+    string statusStr = "step " + std::to_string(this->numOfSteps) + " COMPLETED";
+    return statusStr;
+    
 }
 
 
@@ -111,16 +110,20 @@ void AddPlan::act(Simulation &simulation){
 
 
 
-
+// edit plan to string add the convertion from policy type to text
 //to string method (AddPlan)
  const string AddPlan::toString() const {
-    if(this->getStatus() == ActionStatus::ERROR){  
-     return"Couldn't Add Plan"; 
-     }            
-
+    return "yes";
+    /*
+    string statusString;
+    if(this->getStatus() == ActionStatus::ERROR){
+        statusString = "ERROR";
+    }
     else{
-          return "Add Plan Status: COMPLETED Settlement name:" + this->settlementName + "Selection Policy:" + this->selectionPolicy; 
-    }  
+        statusString = "COMPLETED";
+    }
+    return statusString;
+    */
  }
 
 
@@ -152,6 +155,7 @@ AddSettlement *AddSettlement::clone() const{
     return new AddSettlement(this->settlementName, this->settlementType);
 }
 
+// add settlement type
 //to string method (AddSettlement)
  const std::string AddSettlement::toString() const{
     string statusString;
